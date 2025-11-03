@@ -1,0 +1,53 @@
+.language-switcher {
+  display: flex;
+  gap: 0.25rem;
+  background-color: #2a2a2a;
+  padding: 0.25rem;
+  border-radius: 6px;
+  border: 1px solid #444;
+}
+
+.lang-button {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  background-color: transparent;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lang-button:hover {
+  background-color: #3a3a3a;
+  color: #ccc;
+}
+
+.lang-button.active {
+  background-color: #646cff;
+  color: white;
+}
+
+/* Light mode */
+@media (prefers-color-scheme: light) {
+  .language-switcher {
+    background-color: #f0f0f0;
+    border-color: #ccc;
+  }
+
+  .lang-button {
+    color: #666;
+  }
+
+  .lang-button:hover {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+
+  .lang-button.active {
+    background-color: #4285f4;
+    color: white;
+  }
+}
+
