@@ -12,26 +12,17 @@ interface CalendarEvent {
   description?: string
 }
 
-interface SelectedSlot {
-  day: number
-  dayName: string
-  date: string
-  startHour: number
-  endHour: number
-}
-
 const WeekCalendar = () => {
   const { t } = useTranslation()
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [currentWeek, setCurrentWeek] = useState(new Date())
   const [playerName, setPlayerName] = useState('')
-  const [selectedSlot, setSelectedSlot] = useState<SelectedSlot | null>(null)
 
   // Fixed duration in hours
   const SESSION_DURATION = 3
 
-  // Generate hours from 0 to 23
-  const hours = Array.from({ length: 24 }, (_, i) => i)
+  // Generate time slots with 30-minute intervals (0, 0.5, 1, 1.5, ... 23.5)
+  const timeSlots = Array.from({ length: 48 }, (_, i) => i * 0.5)
 
   // Get the start of the current week (Sunday)
   const getWeekStart = (date: Date) => {
@@ -60,9 +51,11 @@ const WeekCalendar = () => {
   })
 
   const formatTime = (hour: number) => {
-    const period = hour >= 12 ? 'PM' : 'AM'
-    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
-    return `${displayHour}:00 ${period}`
+    const fullHour = Math.floor(hour)
+    const minutes = (hour % 1) * 60
+    const period = fullHour >= 12 ? 'PM' : 'AM'
+    const displayHour = fullHour === 0 ? 12 : fullHour > 12 ? fullHour - 12 : fullHour
+    return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`
   }
 
   const formatDate = (date: Date) => {
@@ -85,35 +78,14 @@ const WeekCalendar = () => {
       return
     }
 
-    const endHour = hour + SESSION_DURATION
-    setSelectedSlot({
-      day,
-      dayName: daysOfWeek[day],
-      date: formatDate(weekDates[day]),
-      startHour: hour,
-      endHour: endHour > 23 ? 24 : endHour,
-    })
-  }
-
-  const handleCreateSession = () => {
-    if (!selectedSlot) {
-      alert(t('calendar.selectTimeSlot'))
-      return
-    }
-
     const newEvent: CalendarEvent = {
       id: Date.now().toString(),
-      day: selectedSlot.day,
-      startHour: selectedSlot.startHour,
+      day,
+      startHour: hour,
       duration: SESSION_DURATION,
       title: t('session.title'),
     }
     setEvents([...events, newEvent])
-    setSelectedSlot(null)
-  }
-
-  const handleClearSelection = () => {
-    setSelectedSlot(null)
   }
 
   const isToday = (date: Date) => {
@@ -164,31 +136,6 @@ const WeekCalendar = () => {
           </div>
         </div>
 
-        {selectedSlot && (
-          <div className="selected-hours">
-            <h3>{t('selectedHours.title')}</h3>
-            <div className="selected-info">
-              <p>
-                <strong>
-                  {selectedSlot.dayName}, {selectedSlot.date}
-                </strong>
-              </p>
-              <p>
-                {formatTime(selectedSlot.startHour)} -{' '}
-                {formatTime(selectedSlot.endHour)}
-              </p>
-            </div>
-            <div className="selected-actions">
-              <button onClick={handleCreateSession} className="btn-create">
-                {t('selectedHours.createButton')}
-              </button>
-              <button onClick={handleClearSelection} className="btn-clear">
-                {t('selectedHours.clearButton')}
-              </button>
-            </div>
-          </div>
-        )}
-
         <div className="week-navigation">
           <button onClick={() => navigateWeek('prev')}>
             {t('navigation.previousWeek')}
@@ -224,51 +171,68 @@ const WeekCalendar = () => {
           ))}
 
           {/* Time slots */}
-          {hours.map(hour => (
-            <>
-              {/* Time label */}
-              <div key={`time-${hour}`} className="time-label">
-                {formatTime(hour)}
-              </div>
+          {timeSlots.map(timeSlot => {
+            const isFullHour = timeSlot % 1 === 0
+            return (
+              <>
+                {/* Time label - only show for full hours */}
+                <div
+                  key={`time-${timeSlot}`}
+                  className={`time-label ${!isFullHour ? 'half-hour' : ''}`}
+                >
+                  {isFullHour ? formatTime(timeSlot) : ''}
+                </div>
 
-              {/* Day cells */}
-              {weekDates.map((_, dayIndex) => {
-                const dayEvents = events.filter(
-                  e => e.day === dayIndex && e.startHour === hour
-                )
+                {/* Day cells */}
+                {weekDates.map((_, dayIndex) => {
+                  // Events that start at this exact time slot
+                  const startingEvents = events.filter(
+                    e => e.day === dayIndex && e.startHour === timeSlot
+                  )
 
-                return (
-                  <div
-                    key={`cell-${dayIndex}-${hour}`}
-                    className={`calendar-cell ${isToday(weekDates[dayIndex]) ? 'today-column' : ''}`}
-                    onClick={() => handleCellClick(dayIndex, hour)}
-                  >
-                    {dayEvents.map(event => (
-                      <div
-                        key={event.id}
-                        className="calendar-event"
-                        style={{
-                          height: `${event.duration * 100}%`,
-                        }}
-                        onClick={e => {
-                          e.stopPropagation()
-                          if (window.confirm(t('calendar.deleteConfirm'))) {
-                            setEvents(events.filter(e => e.id !== event.id))
-                          }
-                        }}
-                      >
-                        <div className="event-title">{event.title}</div>
-                        <div className="event-time">
-                          {formatTime(event.startHour)} -{' '}
-                          {formatTime(event.startHour + event.duration)}
+                  // Check if this cell is covered by any event (but doesn't start here)
+                  const coveredByEvents = events.filter(
+                    e =>
+                      e.day === dayIndex &&
+                      timeSlot > e.startHour &&
+                      timeSlot < e.startHour + e.duration
+                  )
+                  const isCovered = coveredByEvents.length > 0
+
+                  return (
+                    <div
+                      key={`cell-${dayIndex}-${timeSlot}`}
+                      className={`calendar-cell ${!isFullHour ? 'half-hour' : ''} ${isToday(weekDates[dayIndex]) ? 'today-column' : ''} ${isCovered ? 'covered' : ''}`}
+                      onClick={() => handleCellClick(dayIndex, timeSlot)}
+                    >
+                      {/* Translucent overlay for covered cells */}
+                      {isCovered && <div className="cell-overlay" />}
+
+                      {/* Only render events that start at this time slot */}
+                      {startingEvents.map(event => (
+                        <div
+                          key={event.id}
+                          className="calendar-event starting-event"
+                          onClick={e => {
+                            e.stopPropagation()
+                            if (window.confirm(t('calendar.deleteConfirm'))) {
+                              setEvents(events.filter(e => e.id !== event.id))
+                            }
+                          }}
+                        >
+                          <div className="event-title">{event.title}</div>
+                          <div className="event-time">
+                            {formatTime(event.startHour)} -{' '}
+                            {formatTime(event.startHour + event.duration)}
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )
-              })}
-            </>
-          ))}
+                      ))}
+                    </div>
+                  )
+                })}
+              </>
+            )
+          })}
         </div>
       </div>
     </div>
