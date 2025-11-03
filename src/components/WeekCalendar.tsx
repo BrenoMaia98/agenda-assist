@@ -65,28 +65,64 @@ const WeekCalendar = () => {
 
   const handleMouseUp = () => {
     if (isDragging && dragStart && dragEnd) {
-      const newEvents: CalendarEvent[] = []
+      // Check if there's a session at the starting position
+      const startingEvent = events.find(
+        e => e.day === dragStart.day && e.startHour === dragStart.hour
+      )
       
-      const startDay = Math.min(dragStart.day, dragEnd.day)
-      const endDay = Math.max(dragStart.day, dragEnd.day)
-      const startHour = Math.min(dragStart.hour, dragEnd.hour)
-      const endHour = Math.max(dragStart.hour, dragEnd.hour)
-      
-      // Create sessions for each day in the range
-      for (let d = startDay; d <= endDay; d++) {
-        // Create sessions for each hour in the range
-        for (let h = startHour; h <= endHour; h += 0.5) {
-          newEvents.push({
-            id: `${Date.now()}-${d}-${h}`,
-            day: d,
-            startHour: h,
+      // Check if clicking on the same cell (not dragging)
+      if (dragStart.day === dragEnd.day && dragStart.hour === dragEnd.hour) {
+        if (startingEvent) {
+          // Delete the existing session
+          setEvents(events.filter(e => e.id !== startingEvent.id))
+        } else {
+          // Create a new session
+          const newEvent: CalendarEvent = {
+            id: `${Date.now()}-${dragStart.day}-${dragStart.hour}`,
+            day: dragStart.day,
+            startHour: dragStart.hour,
             duration: SESSION_DURATION,
             title: t('session.title'),
-          })
+          }
+          setEvents([...events, newEvent])
+        }
+      } else {
+        // Dragging
+        const startDay = Math.min(dragStart.day, dragEnd.day)
+        const endDay = Math.max(dragStart.day, dragEnd.day)
+        const startHour = Math.min(dragStart.hour, dragEnd.hour)
+        const endHour = Math.max(dragStart.hour, dragEnd.hour)
+        
+        if (startingEvent) {
+          // Started on existing session: DELETE mode
+          // Remove all sessions in the dragged area
+          setEvents(events.filter(e => {
+            const inDayRange = e.day >= startDay && e.day <= endDay
+            const inHourRange = e.startHour >= startHour && e.startHour <= endHour
+            // Keep events that are NOT in the selection
+            return !(inDayRange && inHourRange)
+          }))
+        } else {
+          // Started on empty cell: CREATE mode
+          const newEvents: CalendarEvent[] = []
+          
+          // Create sessions for each day in the range
+          for (let d = startDay; d <= endDay; d++) {
+            // Create sessions for each hour in the range
+            for (let h = startHour; h <= endHour; h += 0.5) {
+              newEvents.push({
+                id: `${Date.now()}-${d}-${h}`,
+                day: d,
+                startHour: h,
+                duration: SESSION_DURATION,
+                title: t('session.title'),
+              })
+            }
+          }
+          
+          setEvents([...events, ...newEvents])
         }
       }
-      
-      setEvents([...events, ...newEvents])
     }
 
     setIsDragging(false)
@@ -225,10 +261,6 @@ const WeekCalendar = () => {
                         <div
                           key={event.id}
                           className="calendar-event starting-event"
-                          onClick={e => {
-                            e.stopPropagation()
-                            handleDeleteEvent(event.id)
-                          }}
                         >
                           <div className="event-title">{event.title}</div>
                           <div className="event-time">
