@@ -16,6 +16,9 @@ const WeekCalendar = () => {
   const { t } = useTranslation()
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [playerName, setPlayerName] = useState('')
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragStart, setDragStart] = useState<{ day: number; hour: number } | null>(null)
+  const [dragEnd, setDragEnd] = useState<{ day: number; hour: number } | null>(null)
 
   // Fixed duration in hours
   const SESSION_DURATION = 3
@@ -43,25 +46,61 @@ const WeekCalendar = () => {
   }
 
 
-  const handleCellClick = (day: number, hour: number) => {
+  const handleMouseDown = (day: number, hour: number) => {
     if (playerName.trim().length < 3) {
       alert(t('player.minLengthError'))
       return
     }
 
-    const newEvent: CalendarEvent = {
-      id: Date.now().toString(),
-      day,
-      startHour: hour,
-      duration: SESSION_DURATION,
-      title: t('session.title'),
+    setIsDragging(true)
+    setDragStart({ day, hour })
+    setDragEnd({ day, hour })
+  }
+
+  const handleMouseEnter = (day: number, hour: number) => {
+    if (isDragging && dragStart) {
+      setDragEnd({ day, hour })
     }
-    setEvents([...events, newEvent])
+  }
+
+  const handleMouseUp = () => {
+    if (isDragging && dragStart && dragEnd) {
+      const newEvents: CalendarEvent[] = []
+      
+      const startDay = Math.min(dragStart.day, dragEnd.day)
+      const endDay = Math.max(dragStart.day, dragEnd.day)
+      const startHour = Math.min(dragStart.hour, dragEnd.hour)
+      const endHour = Math.max(dragStart.hour, dragEnd.hour)
+      
+      // Create sessions for each day in the range
+      for (let d = startDay; d <= endDay; d++) {
+        // Create sessions for each hour in the range
+        for (let h = startHour; h <= endHour; h += 0.5) {
+          newEvents.push({
+            id: `${Date.now()}-${d}-${h}`,
+            day: d,
+            startHour: h,
+            duration: SESSION_DURATION,
+            title: t('session.title'),
+          })
+        }
+      }
+      
+      setEvents([...events, ...newEvents])
+    }
+
+    setIsDragging(false)
+    setDragStart(null)
+    setDragEnd(null)
+  }
+
+  const handleDeleteEvent = (eventId: string) => {
+    setEvents(events.filter(e => e.id !== eventId))
   }
 
 
   return (
-    <div className="week-calendar">
+    <div className="week-calendar" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
       <div className="calendar-header">
         <div className="header-top">
           <h1>{t('app.title')}</h1>
@@ -152,14 +191,34 @@ const WeekCalendar = () => {
                   )
                   const isCovered = coveredByEvents.length > 0
 
+                  // Check if this cell is in the drag selection
+                  let isInDragSelection = false
+                  if (isDragging && dragStart && dragEnd) {
+                    const minDay = Math.min(dragStart.day, dragEnd.day)
+                    const maxDay = Math.max(dragStart.day, dragEnd.day)
+                    const minHour = Math.min(dragStart.hour, dragEnd.hour)
+                    const maxHour = Math.max(dragStart.hour, dragEnd.hour)
+                    
+                    isInDragSelection =
+                      dayIndex >= minDay &&
+                      dayIndex <= maxDay &&
+                      timeSlot >= minHour &&
+                      timeSlot <= maxHour
+                  }
+
                   return (
                     <div
                       key={`cell-${dayIndex}-${timeSlot}`}
-                      className={`calendar-cell ${!isFullHour ? 'half-hour' : ''} ${isCovered ? 'covered' : ''}`}
-                      onClick={() => handleCellClick(dayIndex, timeSlot)}
+                      className={`calendar-cell ${!isFullHour ? 'half-hour' : ''} ${isCovered ? 'covered' : ''} ${isInDragSelection ? 'drag-preview' : ''}`}
+                      onMouseDown={() => handleMouseDown(dayIndex, timeSlot)}
+                      onMouseEnter={() => handleMouseEnter(dayIndex, timeSlot)}
+                      onMouseUp={handleMouseUp}
                     >
                       {/* Translucent overlay for covered cells */}
                       {isCovered && <div className="cell-overlay" />}
+
+                      {/* Drag preview overlay */}
+                      {isInDragSelection && <div className="drag-overlay" />}
 
                       {/* Only render events that start at this time slot */}
                       {startingEvents.map(event => (
@@ -168,9 +227,7 @@ const WeekCalendar = () => {
                           className="calendar-event starting-event"
                           onClick={e => {
                             e.stopPropagation()
-                            if (window.confirm(t('calendar.deleteConfirm'))) {
-                              setEvents(events.filter(e => e.id !== event.id))
-                            }
+                            handleDeleteEvent(event.id)
                           }}
                         >
                           <div className="event-title">{event.title}</div>
