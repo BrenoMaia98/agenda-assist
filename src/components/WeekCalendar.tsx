@@ -15,7 +15,6 @@ interface CalendarEvent {
 const WeekCalendar = () => {
   const { t } = useTranslation()
   const [events, setEvents] = useState<CalendarEvent[]>([])
-  const [currentWeek, setCurrentWeek] = useState(new Date())
   const [playerName, setPlayerName] = useState('')
 
   // Fixed duration in hours
@@ -23,16 +22,6 @@ const WeekCalendar = () => {
 
   // Generate time slots with 30-minute intervals (0, 0.5, 1, 1.5, ... 23.5)
   const timeSlots = Array.from({ length: 48 }, (_, i) => i * 0.5)
-
-  // Get the start of the current week (Sunday)
-  const getWeekStart = (date: Date) => {
-    const d = new Date(date)
-    const day = d.getDay()
-    const diff = d.getDate() - day
-    return new Date(d.setDate(diff))
-  }
-
-  const weekStart = getWeekStart(currentWeek)
 
   // Generate days of the week
   const daysOfWeek = [
@@ -44,11 +33,6 @@ const WeekCalendar = () => {
     t('days.friday'),
     t('days.saturday'),
   ]
-  const weekDates = daysOfWeek.map((_, index) => {
-    const date = new Date(weekStart)
-    date.setDate(weekStart.getDate() + index)
-    return date
-  })
 
   const formatTime = (hour: number) => {
     const fullHour = Math.floor(hour)
@@ -58,19 +42,6 @@ const WeekCalendar = () => {
     return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`
   }
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  }
-
-  const navigateWeek = (direction: 'prev' | 'next') => {
-    const newDate = new Date(currentWeek)
-    newDate.setDate(currentWeek.getDate() + (direction === 'next' ? 7 : -7))
-    setCurrentWeek(newDate)
-  }
-
-  const goToToday = () => {
-    setCurrentWeek(new Date())
-  }
 
   const handleCellClick = (day: number, hour: number) => {
     if (playerName.trim().length < 3) {
@@ -88,10 +59,6 @@ const WeekCalendar = () => {
     setEvents([...events, newEvent])
   }
 
-  const isToday = (date: Date) => {
-    const today = new Date()
-    return date.toDateString() === today.toDateString()
-  }
 
   return (
     <div className="week-calendar">
@@ -135,16 +102,6 @@ const WeekCalendar = () => {
             </span>
           </div>
         </div>
-
-        <div className="week-navigation">
-          <button onClick={() => navigateWeek('prev')}>
-            {t('navigation.previousWeek')}
-          </button>
-          <button onClick={goToToday}>{t('navigation.today')}</button>
-          <button onClick={() => navigateWeek('next')}>
-            {t('navigation.nextWeek')}
-          </button>
-        </div>
       </div>
 
       <div
@@ -160,13 +117,9 @@ const WeekCalendar = () => {
           <div className="time-header"></div>
 
           {/* Day headers */}
-          {weekDates.map((date, index) => (
-            <div
-              key={index}
-              className={`day-header ${isToday(date) ? 'today' : ''}`}
-            >
-              <div className="day-name">{daysOfWeek[index]}</div>
-              <div className="day-date">{formatDate(date)}</div>
+          {daysOfWeek.map((day, index) => (
+            <div key={index} className="day-header">
+              <div className="day-name">{day}</div>
             </div>
           ))}
 
@@ -184,7 +137,7 @@ const WeekCalendar = () => {
                 </div>
 
                 {/* Day cells */}
-                {weekDates.map((_, dayIndex) => {
+                {daysOfWeek.map((_, dayIndex) => {
                   // Events that start at this exact time slot
                   const startingEvents = events.filter(
                     e => e.day === dayIndex && e.startHour === timeSlot
@@ -202,7 +155,7 @@ const WeekCalendar = () => {
                   return (
                     <div
                       key={`cell-${dayIndex}-${timeSlot}`}
-                      className={`calendar-cell ${!isFullHour ? 'half-hour' : ''} ${isToday(weekDates[dayIndex]) ? 'today-column' : ''} ${isCovered ? 'covered' : ''}`}
+                      className={`calendar-cell ${!isFullHour ? 'half-hour' : ''} ${isCovered ? 'covered' : ''}`}
                       onClick={() => handleCellClick(dayIndex, timeSlot)}
                     >
                       {/* Translucent overlay for covered cells */}
