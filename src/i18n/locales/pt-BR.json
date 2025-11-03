@@ -1,0 +1,43 @@
+{
+  "app": {
+    "title": "Agendador de Sessões de RPG"
+  },
+  "player": {
+    "label": "Nome do Jogador:",
+    "placeholder": "Digite seu nome de jogador (mín 3 caracteres)...",
+    "required": "Obrigatório",
+    "more": "faltam",
+    "minLengthError": "O nome do jogador deve ter pelo menos 3 caracteres"
+  },
+  "session": {
+    "label": "Sessão:",
+    "title": "Campanha de D&D - Assalto ao Dragão",
+    "duration": "Duração:",
+    "hours": "horas"
+  },
+  "selectedHours": {
+    "title": "Horários Selecionados",
+    "createButton": "Criar Sessão",
+    "clearButton": "Limpar"
+  },
+  "navigation": {
+    "previousWeek": "← Semana Anterior",
+    "today": "Hoje",
+    "nextWeek": "Próxima Semana →"
+  },
+  "calendar": {
+    "overlayMessage": "Por favor, insira seu nome de jogador para interagir com o calendário",
+    "deleteConfirm": "Excluir este evento?",
+    "selectTimeSlot": "Por favor, selecione um horário"
+  },
+  "days": {
+    "sunday": "Domingo",
+    "monday": "Segunda",
+    "tuesday": "Terça",
+    "wednesday": "Quarta",
+    "thursday": "Quinta",
+    "friday": "Sexta",
+    "saturday": "Sábado"
+  }
+}
+

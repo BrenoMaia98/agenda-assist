@@ -1,0 +1,43 @@
+{
+  "app": {
+    "title": "TTRPG Session Planner"
+  },
+  "player": {
+    "label": "Player Name:",
+    "placeholder": "Enter your player name (min 3 chars)...",
+    "required": "Required",
+    "more": "more",
+    "minLengthError": "Player name must be at least 3 characters long"
+  },
+  "session": {
+    "label": "Session:",
+    "title": "D&D Campaign - Dragon Heist",
+    "duration": "Duration:",
+    "hours": "hours"
+  },
+  "selectedHours": {
+    "title": "Selected Hours",
+    "createButton": "Create Session",
+    "clearButton": "Clear"
+  },
+  "navigation": {
+    "previousWeek": "← Previous Week",
+    "today": "Today",
+    "nextWeek": "Next Week →"
+  },
+  "calendar": {
+    "overlayMessage": "Please enter your player name to interact with the calendar",
+    "deleteConfirm": "Delete this event?",
+    "selectTimeSlot": "Please select a time slot"
+  },
+  "days": {
+    "sunday": "Sunday",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday"
+  }
+}
+
