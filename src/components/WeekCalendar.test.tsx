@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import WeekCalendar from './WeekCalendar'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import '../i18n/config'
+import WeekCalendar from './WeekCalendar'
 
 describe('WeekCalendar', () => {
   beforeEach(() => {
@@ -12,7 +12,9 @@ describe('WeekCalendar', () => {
   describe('Initial Rendering', () => {
     it('should render the calendar title', () => {
       render(<WeekCalendar />)
-      expect(screen.getByText('Agendador de Sessões de RPG')).toBeInTheDocument()
+      expect(
+        screen.getByText('Agendador de Sessões de RPG')
+      ).toBeInTheDocument()
     })
 
     it('should render all days of the week', () => {
@@ -74,9 +76,9 @@ describe('WeekCalendar', () => {
       const input = screen.getByPlaceholderText(/Digite seu nome de jogador/i)
       await userEvent.type(input, 'AB')
 
-      const cells = screen.getAllByRole('generic').filter(el => 
-        el.className.includes('calendar-cell')
-      )
+      const cells = screen
+        .getAllByRole('generic')
+        .filter(el => el.className.includes('calendar-cell'))
       if (cells.length > 0) {
         fireEvent.mouseDown(cells[0])
         fireEvent.mouseUp(cells[0])
@@ -98,15 +100,13 @@ describe('WeekCalendar', () => {
       expect(screen.getByText('Obrigatório')).toBeInTheDocument()
 
       await userEvent.type(input, 'A')
-      expect(screen.getByText('2 faltam')).toBeInTheDocument()
+      expect(screen.queryByText('Obrigatório')).not.toBeInTheDocument()
 
-      await userEvent.type(input, 'B')
-      expect(screen.getByText('1 faltam')).toBeInTheDocument()
+      await userEvent.clear(input)
+      expect(screen.getByText('Obrigatório')).toBeInTheDocument()
 
-      await userEvent.type(input, 'C')
-      await waitFor(() => {
-        expect(screen.queryByText(/faltam/)).not.toBeInTheDocument()
-      })
+      await userEvent.type(input, 'ABC')
+      expect(screen.queryByText('Obrigatório')).not.toBeInTheDocument()
     })
   })
 
@@ -123,31 +123,38 @@ describe('WeekCalendar', () => {
     })
 
     it('should create a session when clicking on empty cell', async () => {
-      const cells = screen.getAllByRole('generic').filter(el => 
-        el.className.includes('calendar-cell') && !el.className.includes('covered')
-      )
-      
+      const cells = screen
+        .getAllByRole('generic')
+        .filter(
+          el =>
+            el.className.includes('calendar-cell') &&
+            !el.className.includes('covered')
+        )
+
       expect(cells.length).toBeGreaterThan(0)
-      
+
       fireEvent.mouseDown(cells[0])
       fireEvent.mouseUp(cells[0])
 
       await waitFor(() => {
-        expect(screen.getByText(/Campanha 2 de D&D/i)).toBeInTheDocument()
+        const events = screen.getAllByText(/Campanha 2 de D&D/i)
+        // Should have at least 2: one in header, one in event
+        expect(events.length).toBeGreaterThan(1)
       })
     })
 
     it('should delete session when clicking on existing session', async () => {
-      const cells = screen.getAllByRole('generic').filter(el => 
-        el.className.includes('calendar-cell')
-      )
+      const cells = screen
+        .getAllByRole('generic')
+        .filter(el => el.className.includes('calendar-cell'))
 
       // Create session
       fireEvent.mouseDown(cells[0])
       fireEvent.mouseUp(cells[0])
 
       await waitFor(() => {
-        expect(screen.getByText(/Campanha 2 de D&D/i)).toBeInTheDocument()
+        const events = screen.getAllByText(/Campanha 2 de D&D/i)
+        expect(events.length).toBeGreaterThan(1)
       })
 
       // Delete session
@@ -155,7 +162,9 @@ describe('WeekCalendar', () => {
       fireEvent.mouseUp(cells[0])
 
       await waitFor(() => {
-        expect(screen.queryByText(/Campanha 2 de D&D/i)).not.toBeInTheDocument()
+        const events = screen.queryAllByText(/Campanha 2 de D&D/i)
+        // Should only have 1 left (the header title)
+        expect(events.length).toBe(1)
       })
     })
   })
@@ -168,9 +177,9 @@ describe('WeekCalendar', () => {
     })
 
     it('should create multiple sessions when dragging vertically in same day', async () => {
-      const cells = screen.getAllByRole('generic').filter(el => 
-        el.className.includes('calendar-cell')
-      )
+      const cells = screen
+        .getAllByRole('generic')
+        .filter(el => el.className.includes('calendar-cell'))
 
       // Drag from cell 0 to cell 2 (same column)
       fireEvent.mouseDown(cells[0])
@@ -185,9 +194,9 @@ describe('WeekCalendar', () => {
     })
 
     it('should create sessions across multiple days when dragging horizontally', async () => {
-      const cells = screen.getAllByRole('generic').filter(el => 
-        el.className.includes('calendar-cell')
-      )
+      const cells = screen
+        .getAllByRole('generic')
+        .filter(el => el.className.includes('calendar-cell'))
 
       // Find cells in different days but same time
       const cellsPerDay = Math.floor(cells.length / 7)
@@ -213,9 +222,9 @@ describe('WeekCalendar', () => {
     })
 
     it('should delete multiple sessions when dragging from existing session', async () => {
-      const cells = screen.getAllByRole('generic').filter(el => 
-        el.className.includes('calendar-cell')
-      )
+      const cells = screen
+        .getAllByRole('generic')
+        .filter(el => el.className.includes('calendar-cell'))
 
       // Create sessions
       fireEvent.mouseDown(cells[0])
@@ -227,7 +236,8 @@ describe('WeekCalendar', () => {
         expect(events.length).toBeGreaterThan(0)
       })
 
-      const eventCountBefore = screen.queryAllByText(/Campanha 2 de D&D/i).length
+      const eventCountBefore =
+        screen.queryAllByText(/Campanha 2 de D&D/i).length
 
       // Delete by dragging from existing session
       fireEvent.mouseDown(cells[0])
@@ -244,7 +254,7 @@ describe('WeekCalendar', () => {
   describe('Language Switching', () => {
     it('should switch to English when clicking EN button', async () => {
       render(<WeekCalendar />)
-      
+
       const enButton = screen.getByText('EN')
       await userEvent.click(enButton)
 
@@ -256,28 +266,28 @@ describe('WeekCalendar', () => {
 
     it('should display Portuguese by default', () => {
       render(<WeekCalendar />)
-      expect(screen.getByText('Agendador de Sessões de RPG')).toBeInTheDocument()
+      expect(
+        screen.getByText('Agendador de Sessões de RPG')
+      ).toBeInTheDocument()
       expect(screen.getByText('Domingo')).toBeInTheDocument()
     })
   })
 
   describe('Visual Feedback', () => {
-    beforeEach(async () => {
+    it('should show drag preview when dragging', async () => {
       render(<WeekCalendar />)
       const input = screen.getByPlaceholderText(/Digite seu nome de jogador/i)
       await userEvent.type(input, 'TestUser')
-    })
 
-    it('should show drag preview when dragging', async () => {
-      const cells = screen.getAllByRole('generic').filter(el => 
-        el.className.includes('calendar-cell')
-      )
+      const cells = screen
+        .getAllByRole('generic')
+        .filter(el => el.className.includes('calendar-cell'))
 
       fireEvent.mouseDown(cells[0])
       fireEvent.mouseEnter(cells[1])
 
       await waitFor(() => {
-        const dragPreview = cells.find(cell => 
+        const dragPreview = cells.find(cell =>
           cell.className.includes('drag-preview')
         )
         expect(dragPreview).toBeDefined()
@@ -287,16 +297,20 @@ describe('WeekCalendar', () => {
     })
 
     it('should show translucent overlay on cells covered by sessions', async () => {
-      const cells = screen.getAllByRole('generic').filter(el => 
-        el.className.includes('calendar-cell')
-      )
+      const { container } = render(<WeekCalendar />)
+      const input = screen.getByPlaceholderText(/Digite seu nome de jogador/i)
+      await userEvent.type(input, 'TestUser')
+
+      const cells = screen
+        .getAllByRole('generic')
+        .filter(el => el.className.includes('calendar-cell'))
 
       // Create a session
       fireEvent.mouseDown(cells[0])
       fireEvent.mouseUp(cells[0])
 
       await waitFor(() => {
-        const overlay = screen.container.querySelector('.cell-overlay')
+        const overlay = container.querySelector('.cell-overlay')
         expect(overlay).toBeInTheDocument()
       })
     })
@@ -313,19 +327,18 @@ describe('WeekCalendar', () => {
       const input = screen.getByPlaceholderText(/Digite seu nome de jogador/i)
       await userEvent.type(input, 'TestUser')
 
-      const cells = screen.getAllByRole('generic').filter(el => 
-        el.className.includes('calendar-cell')
-      )
+      const cells = screen
+        .getAllByRole('generic')
+        .filter(el => el.className.includes('calendar-cell'))
 
       fireEvent.mouseDown(cells[0])
       fireEvent.mouseUp(cells[0])
 
       await waitFor(() => {
         // Should show time range like "12:00 AM - 3:00 AM"
-        const timeDisplay = screen.getByText(/-/)
-        expect(timeDisplay).toBeInTheDocument()
+        const timeDisplays = screen.getAllByText(/-/)
+        expect(timeDisplays.length).toBeGreaterThan(0)
       })
     })
   })
 })
-

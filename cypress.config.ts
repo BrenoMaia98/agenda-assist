@@ -8,6 +8,8 @@ export default defineConfig({
     },
     specPattern: 'src/**/*.cy.tsx',
     supportFile: 'cypress/support/component.ts',
+    viewportWidth: 1400,
+    viewportHeight: 1200,
   },
 })
 

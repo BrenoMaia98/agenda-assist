@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import './WeekCalendar.css'
 import LanguageSwitcher from './LanguageSwitcher'
@@ -155,11 +155,9 @@ const WeekCalendar = () => {
               className="player-name-input"
               minLength={3}
             />
-            {playerName.trim().length < 3 && (
+            {playerName.trim().length === 0 && (
               <span className="required-badge">
-                {playerName.trim().length === 0
-                  ? t('player.required')
-                  : `${3 - playerName.trim().length} ${t('player.more')}`}
+                {t('player.required')}
               </span>
             )}
           </div>
@@ -202,7 +200,7 @@ const WeekCalendar = () => {
           {timeSlots.map(timeSlot => {
             const isFullHour = timeSlot % 1 === 0
             return (
-              <>
+              <Fragment key={`slot-${timeSlot}`}>
                 {/* Time label - only show for full hours */}
                 <div
                   key={`time-${timeSlot}`}
@@ -272,7 +270,7 @@ const WeekCalendar = () => {
                     </div>
                   )
                 })}
-              </>
+              </Fragment>
             )
           })}
         </div>
