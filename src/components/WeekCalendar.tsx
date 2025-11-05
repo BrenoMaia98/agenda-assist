@@ -2,6 +2,7 @@ import { useState, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import './WeekCalendar.css'
 import LanguageSwitcher from './LanguageSwitcher'
+import ThemeToggle from './ThemeToggle'
 
 interface CalendarEvent {
   id: string
@@ -140,7 +141,10 @@ const WeekCalendar = () => {
       <div className="calendar-header">
         <div className="header-top">
           <h1>{t('app.title')}</h1>
-          <LanguageSwitcher />
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <ThemeToggle />
+            <LanguageSwitcher />
+          </div>
         </div>
 
         <div className="player-info">

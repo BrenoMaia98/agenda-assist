@@ -1,0 +1,74 @@
+.theme-toggle {
+  display: flex;
+  gap: 0.25rem;
+  background-color: var(--bg-dark-tertiary);
+  padding: 0.25rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-dark-secondary);
+}
+
+.theme-button {
+  padding: 0.4rem 0.8rem;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 4px;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-button:hover {
+  background-color: var(--bg-dark-button-hover);
+}
+
+.theme-button.active {
+  background-color: var(--color-primary);
+}
+
+/* Light mode */
+@media (prefers-color-scheme: light) {
+  .theme-toggle {
+    background-color: var(--bg-light-secondary);
+    border-color: var(--border-light-tertiary);
+  }
+
+  .theme-button:hover {
+    background-color: var(--bg-light-button-hover);
+  }
+
+  .theme-button.active {
+    background-color: var(--color-primary);
+  }
+}
+
+/* Override for manual theme selection */
+[data-theme="light"] .theme-toggle {
+  background-color: var(--bg-light-secondary);
+  border-color: var(--border-light-tertiary);
+}
+
+[data-theme="light"] .theme-button:hover {
+  background-color: var(--bg-light-button-hover);
+}
+
+[data-theme="light"] .theme-button.active {
+  background-color: var(--color-primary);
+}
+
+[data-theme="dark"] .theme-toggle {
+  background-color: var(--bg-dark-tertiary);
+  border-color: var(--border-dark-secondary);
+}
+
+[data-theme="dark"] .theme-button:hover {
+  background-color: var(--bg-dark-button-hover);
+}
+
+[data-theme="dark"] .theme-button.active {
+  background-color: var(--color-primary);
+}
+

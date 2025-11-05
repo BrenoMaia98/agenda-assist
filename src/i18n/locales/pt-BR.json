@@ -38,5 +38,10 @@
     "thursday": "Quinta",
     "friday": "Sexta",
     "saturday": "Sábado"
+  },
+  "theme": {
+    "light": "Modo Claro",
+    "dark": "Modo Escuro",
+    "auto": "Automático (Sistema)"
   }
 }
