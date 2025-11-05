@@ -17,8 +17,8 @@ declare global {
 }
 
 Cypress.Commands.add('enterPlayerName', (name: string) => {
-  cy.get('input[placeholder*="nome de jogador"]').clear().type(name)
-  cy.contains(/insira seu nome de jogador/i).should('not.exist')
+  cy.get('select#player-name').select(name)
+  cy.contains(/selecione seu jogador/i).should('not.exist')
   cy.wait(100) // Small wait to ensure state updates
 })
 

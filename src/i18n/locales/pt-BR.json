@@ -3,11 +3,11 @@
     "title": "Agendador de Sessões de RPG"
   },
   "player": {
-    "label": "Nome do Jogador:",
-    "placeholder": "Digite seu nome de jogador (mín 3 caracteres)...",
+    "label": "Selecione o Jogador:",
+    "placeholder": "Escolha um jogador...",
     "required": "Obrigatório",
     "more": "faltam",
-    "minLengthError": "O nome do jogador deve ter pelo menos 3 caracteres"
+    "minLengthError": "Por favor, selecione um jogador"
   },
   "session": {
     "label": "Sessão:",
@@ -26,7 +26,7 @@
     "nextWeek": "Próxima Semana →"
   },
   "calendar": {
-    "overlayMessage": "Por favor, insira seu nome de jogador para interagir com o calendário",
+    "overlayMessage": "Por favor, selecione seu jogador para interagir com o calendário",
     "deleteConfirm": "Excluir este evento?",
     "selectTimeSlot": "Por favor, selecione um horário"
   },

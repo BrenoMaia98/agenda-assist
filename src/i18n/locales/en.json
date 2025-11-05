@@ -3,11 +3,11 @@
     "title": "TTRPG Session Planner"
   },
   "player": {
-    "label": "Player Name:",
-    "placeholder": "Enter your player name (min 3 chars)...",
+    "label": "Select Player:",
+    "placeholder": "Choose a player...",
     "required": "Required",
     "more": "more",
-    "minLengthError": "Player name must be at least 3 characters long"
+    "minLengthError": "Please select a player"
   },
   "session": {
     "label": "Session:",
@@ -26,7 +26,7 @@
     "nextWeek": "Next Week →"
   },
   "calendar": {
-    "overlayMessage": "Please enter your player name to interact with the calendar",
+    "overlayMessage": "Please select your player to interact with the calendar",
     "deleteConfirm": "Delete this event?",
     "selectTimeSlot": "Please select a time slot"
   },

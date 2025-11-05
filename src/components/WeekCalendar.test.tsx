@@ -34,10 +34,10 @@ describe('WeekCalendar', () => {
       expect(screen.getByText('PT')).toBeInTheDocument()
     })
 
-    it('should show player name input', () => {
+    it('should show player select dropdown', () => {
       render(<WeekCalendar />)
       expect(
-        screen.getByPlaceholderText(/Digite seu nome de jogador/i)
+        screen.getByRole('combobox', { name: /selecione o jogador/i })
       ).toBeInTheDocument()
     })
 
@@ -47,35 +47,35 @@ describe('WeekCalendar', () => {
       expect(screen.getByText(/3 horas/i)).toBeInTheDocument()
     })
 
-    it('should show calendar overlay when player name is empty', () => {
+    it('should show calendar overlay when no player is selected', () => {
       render(<WeekCalendar />)
       expect(
-        screen.getByText(/insira seu nome de jogador para interagir/i)
+        screen.getByText(/selecione seu jogador para interagir/i)
       ).toBeInTheDocument()
     })
   })
 
   describe('Player Name Validation', () => {
-    it('should enable calendar when player name has 3+ characters', async () => {
+    it('should enable calendar when a player is selected', async () => {
       render(<WeekCalendar />)
-      const input = screen.getByPlaceholderText(/Digite seu nome de jogador/i)
+      const select = screen.getByRole('combobox', {
+        name: /selecione o jogador/i,
+      })
 
-      await userEvent.type(input, 'Bob')
+      await userEvent.selectOptions(select, 'Nalu')
 
       await waitFor(() => {
         expect(
-          screen.queryByText(/insira seu nome de jogador para interagir/i)
+          screen.queryByText(/selecione seu jogador para interagir/i)
         ).not.toBeInTheDocument()
       })
     })
 
-    it('should show alert when trying to create session with short name', async () => {
+    it('should show alert when trying to create session without selecting player', async () => {
       const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
       render(<WeekCalendar />)
 
-      const input = screen.getByPlaceholderText(/Digite seu nome de jogador/i)
-      await userEvent.type(input, 'AB')
-
+      // Don't select any player
       const cells = screen
         .getAllByRole('generic')
         .filter(el => el.className.includes('calendar-cell'))
@@ -86,26 +86,28 @@ describe('WeekCalendar', () => {
 
       await waitFor(() => {
         expect(alertSpy).toHaveBeenCalledWith(
-          expect.stringContaining('pelo menos 3 caracteres')
+          expect.stringContaining('selecione um jogador')
         )
       })
 
       alertSpy.mockRestore()
     })
 
-    it('should update required badge based on character count', async () => {
+    it('should update required badge based on player selection', async () => {
       render(<WeekCalendar />)
-      const input = screen.getByPlaceholderText(/Digite seu nome de jogador/i)
+      const select = screen.getByRole('combobox', {
+        name: /selecione o jogador/i,
+      })
 
       expect(screen.getByText('Obrigatório')).toBeInTheDocument()
 
-      await userEvent.type(input, 'A')
+      await userEvent.selectOptions(select, 'Yshi')
       expect(screen.queryByText('Obrigatório')).not.toBeInTheDocument()
 
-      await userEvent.clear(input)
+      await userEvent.selectOptions(select, '')
       expect(screen.getByText('Obrigatório')).toBeInTheDocument()
 
-      await userEvent.type(input, 'ABC')
+      await userEvent.selectOptions(select, 'Drefon')
       expect(screen.queryByText('Obrigatório')).not.toBeInTheDocument()
     })
   })
@@ -113,11 +115,13 @@ describe('WeekCalendar', () => {
   describe('Session Creation - Single Click', () => {
     beforeEach(async () => {
       render(<WeekCalendar />)
-      const input = screen.getByPlaceholderText(/Digite seu nome de jogador/i)
-      await userEvent.type(input, 'TestUser')
+      const select = screen.getByRole('combobox', {
+        name: /selecione o jogador/i,
+      })
+      await userEvent.selectOptions(select, 'Breno(GM)')
       await waitFor(() => {
         expect(
-          screen.queryByText(/insira seu nome de jogador/i)
+          screen.queryByText(/selecione seu jogador/i)
         ).not.toBeInTheDocument()
       })
     })
@@ -172,8 +176,10 @@ describe('WeekCalendar', () => {
   describe('Session Creation - Drag', () => {
     beforeEach(async () => {
       render(<WeekCalendar />)
-      const input = screen.getByPlaceholderText(/Digite seu nome de jogador/i)
-      await userEvent.type(input, 'TestUser')
+      const select = screen.getByRole('combobox', {
+        name: /selecione o jogador/i,
+      })
+      await userEvent.selectOptions(select, 'Frizon')
     })
 
     it('should create multiple sessions when dragging vertically in same day', async () => {
@@ -217,8 +223,10 @@ describe('WeekCalendar', () => {
   describe('Session Deletion - Drag from Existing', () => {
     beforeEach(async () => {
       render(<WeekCalendar />)
-      const input = screen.getByPlaceholderText(/Digite seu nome de jogador/i)
-      await userEvent.type(input, 'TestUser')
+      const select = screen.getByRole('combobox', {
+        name: /selecione o jogador/i,
+      })
+      await userEvent.selectOptions(select, 'Tinga')
     })
 
     it('should delete multiple sessions when dragging from existing session', async () => {
@@ -276,8 +284,10 @@ describe('WeekCalendar', () => {
   describe('Visual Feedback', () => {
     it('should show drag preview when dragging', async () => {
       render(<WeekCalendar />)
-      const input = screen.getByPlaceholderText(/Digite seu nome de jogador/i)
-      await userEvent.type(input, 'TestUser')
+      const select = screen.getByRole('combobox', {
+        name: /selecione o jogador/i,
+      })
+      await userEvent.selectOptions(select, 'Zangs')
 
       const cells = screen
         .getAllByRole('generic')
@@ -298,8 +308,10 @@ describe('WeekCalendar', () => {
 
     it('should show translucent overlay on cells covered by sessions', async () => {
       const { container } = render(<WeekCalendar />)
-      const input = screen.getByPlaceholderText(/Digite seu nome de jogador/i)
-      await userEvent.type(input, 'TestUser')
+      const select = screen.getByRole('combobox', {
+        name: /selecione o jogador/i,
+      })
+      await userEvent.selectOptions(select, 'Nalu')
 
       const cells = screen
         .getAllByRole('generic')
@@ -324,8 +336,10 @@ describe('WeekCalendar', () => {
 
     it('should show start and end time on created sessions', async () => {
       render(<WeekCalendar />)
-      const input = screen.getByPlaceholderText(/Digite seu nome de jogador/i)
-      await userEvent.type(input, 'TestUser')
+      const select = screen.getByRole('combobox', {
+        name: /selecione o jogador/i,
+      })
+      await userEvent.selectOptions(select, 'Yshi')
 
       const cells = screen
         .getAllByRole('generic')

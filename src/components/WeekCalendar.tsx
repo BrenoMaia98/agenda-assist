@@ -150,15 +150,22 @@ const WeekCalendar = () => {
         <div className="player-info">
           <div className="setting-field player-name-field">
             <label htmlFor="player-name">{t('player.label')}</label>
-            <input
+            <select
               id="player-name"
-              type="text"
               value={playerName}
               onChange={e => setPlayerName(e.target.value)}
-              placeholder={t('player.placeholder')}
               className="player-name-input"
-              minLength={3}
-            />
+              required
+            >
+              <option value="">{t('player.placeholder')}</option>
+              <option value="Breno(GM)">Breno(GM)</option>
+              <option value="Nalu">Nalu</option>
+              <option value="Yshi">Yshi</option>
+              <option value="Drefon">Drefon</option>
+              <option value="Frizon">Frizon</option>
+              <option value="Tinga">Tinga</option>
+              <option value="Zangs">Zangs</option>
+            </select>
             {playerName.trim().length === 0 && (
               <span className="required-badge">
                 {t('player.required')}
