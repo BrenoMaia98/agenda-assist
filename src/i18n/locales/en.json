@@ -43,6 +43,17 @@
     "light": "Light Mode",
     "dark": "Dark Mode",
     "auto": "Auto (System)"
+  },
+  "view": {
+    "myAvailability": "My Availability",
+    "allPlayers": "All Players",
+    "loading": "Loading sessions...",
+    "error": "Failed to load sessions"
+  },
+  "save": {
+    "saving": "Saving...",
+    "savingIn": "Saving in {{seconds}}s",
+    "saved": "Saved"
   }
 }
 

@@ -43,5 +43,16 @@
     "light": "Modo Claro",
     "dark": "Modo Escuro",
     "auto": "Automático (Sistema)"
+  },
+  "view": {
+    "myAvailability": "Minha Disponibilidade",
+    "allPlayers": "Todos os Jogadores",
+    "loading": "Carregando sessões...",
+    "error": "Falha ao carregar sessões"
+  },
+  "save": {
+    "saving": "Salvando...",
+    "savingIn": "Salvando em {{seconds}}s",
+    "saved": "Salvo"
   }
 }
