@@ -16,6 +16,7 @@
     "cypress:run": "cypress run --component"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.81.1",
     "i18next": "^25.6.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
