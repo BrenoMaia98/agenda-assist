@@ -26,7 +26,7 @@
 .calendar-header h1 {
   margin: 0;
   font-size: 2rem;
-  color: #646cff;
+  color: var(--color-primary);
   flex: 1;
   text-align: center;
 }
@@ -38,10 +38,10 @@
 }
 
 .player-name-field {
-  background-color: #2a2a4a;
+  background-color: var(--bg-dark-field);
   padding: 1rem 1.5rem;
   border-radius: 8px;
-  border: 2px solid #646cff;
+  border: 2px solid var(--color-primary);
   position: relative;
 }
 
@@ -53,8 +53,8 @@
   position: absolute;
   top: -8px;
   right: -8px;
-  background-color: #f44336;
-  color: white;
+  background-color: var(--color-error);
+  color: var(--text-dark-white);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-size: 0.7rem;
@@ -69,9 +69,9 @@
   align-items: center;
   margin-bottom: 1rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #2a2a3a 0%, #1a1a2a 100%);
+  background: linear-gradient(135deg, var(--bg-dark-quaternary) 0%, #1a1a2a 100%);
   border-radius: 8px;
-  border: 1px solid #444;
+  border: 1px solid var(--border-dark-secondary);
 }
 
 .session-title-display {
@@ -82,7 +82,7 @@
 
 .session-label {
   font-size: 0.9rem;
-  color: #888;
+  color: var(--text-dark-tertiary);
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 1px;
@@ -91,7 +91,7 @@
 .session-title {
   margin: 0;
   font-size: 1.5rem;
-  color: #646cff;
+  color: var(--color-primary);
   font-weight: 700;
 }
 
@@ -100,13 +100,13 @@
   align-items: center;
   gap: 0.5rem;
   padding-left: 2rem;
-  border-left: 2px solid #444;
+  border-left: 2px solid var(--border-dark-secondary);
 }
 
 .session-duration label {
   font-weight: 600;
   font-size: 0.9rem;
-  color: #ccc;
+  color: var(--text-dark-secondary);
 }
 
 .setting-field {
@@ -118,22 +118,22 @@
 .setting-field label {
   font-weight: 600;
   font-size: 0.9rem;
-  color: #ccc;
+  color: var(--text-dark-secondary);
 }
 
 .setting-field input {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
-  border: 1px solid #444;
+  border: 1px solid var(--border-dark-secondary);
   border-radius: 6px;
-  background-color: #1a1a1a;
-  color: #fff;
+  background-color: var(--bg-dark-primary);
+  color: var(--text-dark-white);
   min-width: 300px;
 }
 
 .setting-field input:focus {
   outline: none;
-  border-color: #646cff;
+  border-color: var(--color-primary);
 }
 
 .setting-field input:disabled {
@@ -143,25 +143,25 @@
 
 .duration-value {
   font-weight: 600;
-  color: #646cff;
+  color: var(--color-primary);
   font-size: 0.9rem;
   padding: 0.5rem 1rem;
-  background-color: #1a1a1a;
+  background-color: var(--bg-dark-primary);
   border-radius: 6px;
 }
 
 .selected-hours {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--gradient-purple-start) 0%, var(--gradient-purple-end) 100%);
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px var(--shadow-medium);
 }
 
 .selected-hours h3 {
   margin: 0 0 0.75rem 0;
   font-size: 1.1rem;
-  color: white;
+  color: var(--text-dark-white);
 }
 
 .selected-info {
@@ -170,7 +170,7 @@
 
 .selected-info p {
   margin: 0.25rem 0;
-  color: white;
+  color: var(--text-dark-white);
   font-size: 0.95rem;
 }
 
@@ -192,34 +192,34 @@
 }
 
 .btn-create {
-  background-color: #4caf50;
-  color: white;
+  background-color: var(--color-success);
+  color: var(--text-dark-white);
 }
 
 .btn-create:hover {
-  background-color: #45a049;
+  background-color: var(--color-success-hover);
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px var(--shadow-light);
 }
 
 .btn-clear {
-  background-color: #f44336;
-  color: white;
+  background-color: var(--color-error);
+  color: var(--text-dark-white);
 }
 
 .btn-clear:hover {
-  background-color: #da190b;
+  background-color: var(--color-error-hover);
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px var(--shadow-light);
 }
 
 
 .calendar-grid-container {
   flex: 1;
   overflow: auto;
-  border: 1px solid #444;
+  border: 1px solid var(--border-dark-secondary);
   border-radius: 8px;
-  background-color: #1a1a1a;
+  background-color: var(--bg-dark-primary);
   position: relative;
 }
 
@@ -233,7 +233,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(26, 26, 26, 0.9);
+  background-color: var(--overlay-dark);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -243,11 +243,11 @@
 
 .calendar-overlay p {
   font-size: 1.2rem;
-  color: #ccc;
-  background-color: #2a2a2a;
+  color: var(--text-dark-secondary);
+  background-color: var(--bg-dark-tertiary);
   padding: 1.5rem 2rem;
   border-radius: 8px;
-  border: 2px solid #646cff;
+  border: 2px solid var(--color-primary);
   text-align: center;
 }
 
@@ -260,8 +260,8 @@
 .time-header {
   position: sticky;
   top: 0;
-  background-color: #1a1a1a;
-  border-bottom: 2px solid #444;
+  background-color: var(--bg-dark-primary);
+  border-bottom: 2px solid var(--border-dark-secondary);
   z-index: 20;
 }
 
@@ -270,9 +270,9 @@
   top: 0;
   padding: 1rem 0.5rem;
   text-align: center;
-  background-color: #1a1a1a;
-  border-bottom: 2px solid #444;
-  border-left: 1px solid #333;
+  background-color: var(--bg-dark-primary);
+  border-bottom: 2px solid var(--border-dark-secondary);
+  border-left: 1px solid var(--border-dark-primary);
   z-index: 20;
 }
 
@@ -287,22 +287,22 @@
   padding: 0.5rem;
   text-align: right;
   font-size: 0.75rem;
-  color: #888;
-  border-bottom: 1px solid #333;
-  border-right: 1px solid #444;
-  background-color: #1a1a1a;
+  color: var(--text-dark-tertiary);
+  border-bottom: 1px solid var(--border-dark-primary);
+  border-right: 1px solid var(--border-dark-secondary);
+  background-color: var(--bg-dark-primary);
   z-index: 10;
   min-height: 40px;
 }
 
 .time-label.half-hour {
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid var(--border-dark-light);
 }
 
 .calendar-cell {
   min-height: 40px;
-  border-bottom: 1px solid #333;
-  border-left: 1px solid #333;
+  border-bottom: 1px solid var(--border-dark-primary);
+  border-left: 1px solid var(--border-dark-primary);
   cursor: pointer;
   position: relative;
   transition: background-color 0.2s;
@@ -310,11 +310,11 @@
 }
 
 .calendar-cell.half-hour {
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid var(--border-dark-light);
 }
 
 .calendar-cell:hover {
-  background-color: #252525;
+  background-color: var(--bg-dark-hover);
 }
 
 .calendar-cell.covered {
@@ -327,13 +327,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+  background: linear-gradient(135deg, var(--overlay-purple-light) 0%, var(--overlay-purple-light) 100%);
   pointer-events: none;
   z-index: 1;
 }
 
 .calendar-cell.drag-preview {
-  background-color: rgba(102, 126, 234, 0.2);
+  background-color: var(--overlay-purple-medium);
 }
 
 .drag-overlay {
@@ -342,10 +342,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+  background: linear-gradient(135deg, var(--overlay-purple-strong) 0%, var(--overlay-purple-strong) 100%);
   pointer-events: none;
   z-index: 5;
-  border: 2px dashed rgba(102, 126, 234, 0.6);
+  border: 2px dashed var(--overlay-purple-border);
 }
 
 
@@ -355,12 +355,12 @@
   left: 2px;
   right: 2px;
   bottom: 2px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--gradient-purple-start) 0%, var(--gradient-purple-end) 100%);
   border-radius: 4px;
   padding: 0.4rem;
   cursor: pointer;
   overflow: visible;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px var(--shadow-medium);
   transition: transform 0.2s, box-shadow 0.2s;
   z-index: 10;
   display: flex;
@@ -376,14 +376,14 @@
 
 .calendar-event:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 8px var(--shadow-strong);
 }
 
 .event-title {
   font-weight: 600;
   font-size: 0.75rem;
   margin-bottom: 0.15rem;
-  color: white;
+  color: var(--text-dark-white);
   line-height: 1.2;
 }
 
@@ -396,105 +396,105 @@
 /* Light mode */
 @media (prefers-color-scheme: light) {
   .player-name-field {
-    background-color: #e8f0fe;
-    border-color: #4285f4;
+    background-color: var(--bg-light-field);
+    border-color: var(--color-primary);
   }
 
   .session-info {
-    background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
-    border-color: #ccc;
+    background: linear-gradient(135deg, #f0f4ff 0%, var(--bg-light-field) 100%);
+    border-color: var(--border-light-tertiary);
   }
 
   .session-label {
-    color: #666;
+    color: var(--text-light-tertiary);
   }
 
   .session-title {
-    color: #4285f4;
+    color: var(--color-primary);
   }
 
   .session-duration {
-    border-left-color: #ccc;
+    border-left-color: var(--border-light-tertiary);
   }
 
   .session-duration label {
-    color: #333;
+    color: var(--text-light-secondary);
   }
 
   .setting-field label {
-    color: #333;
+    color: var(--text-light-secondary);
   }
 
   .setting-field input {
-    background-color: #ffffff;
-    color: #333;
-    border-color: #ccc;
+    background-color: var(--bg-light-primary);
+    color: var(--text-light-secondary);
+    border-color: var(--border-light-tertiary);
   }
 
   .duration-value {
-    background-color: #ffffff;
-    border: 1px solid #ccc;
+    background-color: var(--bg-light-primary);
+    border: 1px solid var(--border-light-tertiary);
   }
 
   .calendar-overlay {
-    background-color: rgba(245, 245, 245, 0.95);
+    background-color: var(--bg-light-overlay);
   }
 
   .calendar-overlay p {
-    color: #333;
-    background-color: #ffffff;
-    border-color: #4285f4;
+    color: var(--text-light-secondary);
+    background-color: var(--bg-light-primary);
+    border-color: var(--color-primary);
   }
 
   .calendar-grid-container {
-    background-color: #f5f5f5;
-    border-color: #ddd;
+    background-color: var(--bg-light-secondary);
+    border-color: var(--border-light-secondary);
   }
 
   .time-header,
   .day-header,
   .time-label {
-    background-color: #ffffff;
-    border-color: #ddd;
+    background-color: var(--bg-light-primary);
+    border-color: var(--border-light-secondary);
   }
 
 
   .time-label {
-    color: #666;
-    border-right-color: #ddd;
+    color: var(--text-light-tertiary);
+    border-right-color: var(--border-light-secondary);
   }
 
   .time-label.half-hour {
-    border-bottom-color: #f0f0f0;
+    border-bottom-color: var(--border-light-light);
   }
 
   .calendar-cell {
-    border-color: #e0e0e0;
+    border-color: var(--border-light-primary);
   }
 
   .time-label.half-hour {
-    border-bottom-color: #f0f0f0;
+    border-bottom-color: var(--border-light-light);
   }
 
   .calendar-cell.half-hour {
-    border-bottom-color: #f0f0f0;
+    border-bottom-color: var(--border-light-light);
   }
 
   .calendar-cell:hover {
-    background-color: #fafafa;
+    background-color: var(--bg-light-hover);
   }
 
   .cell-overlay {
-    background: linear-gradient(135deg, rgba(66, 133, 244, 0.15) 0%, rgba(52, 168, 83, 0.15) 100%);
+    background: linear-gradient(135deg, var(--overlay-blue-light) 0%, var(--overlay-green) 100%);
   }
 
   .calendar-cell.drag-preview {
-    background-color: rgba(66, 133, 244, 0.2);
+    background-color: var(--overlay-blue-medium);
   }
 
   .drag-overlay {
-    background: linear-gradient(135deg, rgba(66, 133, 244, 0.3) 0%, rgba(52, 168, 83, 0.3) 100%);
-    border-color: rgba(66, 133, 244, 0.6);
+    background: linear-gradient(135deg, var(--overlay-blue-strong) 0%, var(--overlay-green) 100%);
+    border-color: var(--overlay-blue-border);
   }
 
 }

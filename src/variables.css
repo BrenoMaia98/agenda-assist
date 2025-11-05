@@ -1,0 +1,86 @@
+:root {
+  /* Primary Colors */
+  --color-primary: #646cff;
+  --color-primary-hover: #535bf2;
+  --color-primary-light: #4285f4;
+  
+  /* Background Colors - Dark Mode */
+  --bg-dark-primary: #1a1a1a;
+  --bg-dark-secondary: #242424;
+  --bg-dark-tertiary: #2a2a2a;
+  --bg-dark-quaternary: #2a2a3a;
+  --bg-dark-field: #2a2a4a;
+  --bg-dark-hover: #252525;
+  --bg-dark-button-hover: #3a3a3a;
+  
+  /* Border Colors - Dark Mode */
+  --border-dark-primary: #333;
+  --border-dark-secondary: #444;
+  --border-dark-light: #2a2a2a;
+  
+  /* Text Colors - Dark Mode */
+  --text-dark-primary: rgba(255, 255, 255, 0.87);
+  --text-dark-secondary: #ccc;
+  --text-dark-tertiary: #888;
+  --text-dark-white: white;
+  
+  /* Action Colors */
+  --color-success: #4caf50;
+  --color-success-hover: #45a049;
+  --color-error: #f44336;
+  --color-error-hover: #da190b;
+  
+  /* Gradient Colors */
+  --gradient-purple-start: #667eea;
+  --gradient-purple-end: #764ba2;
+  
+  /* Overlay Colors */
+  --overlay-dark: rgba(26, 26, 26, 0.9);
+  --overlay-purple-light: rgba(102, 126, 234, 0.15);
+  --overlay-purple-medium: rgba(102, 126, 234, 0.2);
+  --overlay-purple-strong: rgba(102, 126, 234, 0.3);
+  --overlay-purple-border: rgba(102, 126, 234, 0.6);
+  
+  /* Shadow Colors */
+  --shadow-light: rgba(0, 0, 0, 0.2);
+  --shadow-medium: rgba(0, 0, 0, 0.3);
+  --shadow-strong: rgba(0, 0, 0, 0.4);
+}
+
+/* Light Mode Variables */
+@media (prefers-color-scheme: light) {
+  :root {
+    /* Primary Colors - Light Mode */
+    --color-primary: #4285f4;
+    --color-primary-hover: #747bff;
+    
+    /* Background Colors - Light Mode */
+    --bg-light-primary: #ffffff;
+    --bg-light-secondary: #f5f5f5;
+    --bg-light-tertiary: #f9f9f9;
+    --bg-light-quaternary: #e8f0fe;
+    --bg-light-field: #e8f0fe;
+    --bg-light-hover: #fafafa;
+    --bg-light-button-hover: #e0e0e0;
+    --bg-light-overlay: rgba(245, 245, 245, 0.95);
+    
+    /* Border Colors - Light Mode */
+    --border-light-primary: #e0e0e0;
+    --border-light-secondary: #ddd;
+    --border-light-tertiary: #ccc;
+    --border-light-light: #f0f0f0;
+    
+    /* Text Colors - Light Mode */
+    --text-light-primary: #213547;
+    --text-light-secondary: #333;
+    --text-light-tertiary: #666;
+    
+    /* Overlay Colors - Light Mode */
+    --overlay-blue-light: rgba(66, 133, 244, 0.15);
+    --overlay-blue-medium: rgba(66, 133, 244, 0.2);
+    --overlay-blue-strong: rgba(66, 133, 244, 0.3);
+    --overlay-blue-border: rgba(66, 133, 244, 0.6);
+    --overlay-green: rgba(52, 168, 83, 0.15);
+  }
+}
+
