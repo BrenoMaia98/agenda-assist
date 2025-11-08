@@ -1,8 +1,37 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import '../i18n/config'
+import '../../i18n/config'
 import WeekCalendar from './WeekCalendar'
+import { CalendarProvider } from '../../contexts/CalendarContext'
+import type { ReactElement } from 'react'
+
+// Mock Supabase to prevent real database calls
+const createMockSupabase = () => ({
+  from: vi.fn().mockReturnValue({
+    select: vi.fn().mockReturnValue({
+      eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+    }),
+    delete: vi.fn().mockReturnValue({
+      eq: vi.fn().mockResolvedValue({ error: null }),
+    }),
+    insert: vi.fn().mockResolvedValue({ error: null }),
+  }),
+  channel: vi.fn().mockReturnValue({
+    on: vi.fn().mockReturnThis(),
+    subscribe: vi.fn(),
+  }),
+  removeChannel: vi.fn(),
+})
+
+const renderWithProvider = (ui: ReactElement) => {
+  const mockSupabase = createMockSupabase()
+  return render(
+    <CalendarProvider supabaseClient={mockSupabase as any}>
+      {ui}
+    </CalendarProvider>
+  )
+}
 
 describe('WeekCalendar', () => {
   beforeEach(() => {
@@ -11,14 +40,14 @@ describe('WeekCalendar', () => {
 
   describe('Initial Rendering', () => {
     it('should render the calendar title', () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       expect(
         screen.getByText('Agendador de Sessões de RPG')
       ).toBeInTheDocument()
     })
 
     it('should render all days of the week', () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       expect(screen.getByText('Domingo')).toBeInTheDocument()
       expect(screen.getByText('Segunda')).toBeInTheDocument()
       expect(screen.getByText('Terça')).toBeInTheDocument()
@@ -29,26 +58,26 @@ describe('WeekCalendar', () => {
     })
 
     it('should render language switcher', () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       expect(screen.getByText('EN')).toBeInTheDocument()
       expect(screen.getByText('PT')).toBeInTheDocument()
     })
 
     it('should show player select dropdown', () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       expect(
         screen.getByRole('combobox', { name: /selecione o jogador/i })
       ).toBeInTheDocument()
     })
 
     it('should show session title and duration', () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       expect(screen.getByText(/Campanha/i)).toBeInTheDocument()
       expect(screen.getByText(/3 horas/i)).toBeInTheDocument()
     })
 
     it('should show calendar overlay when no player is selected', () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       expect(
         screen.getByText(/selecione seu jogador para interagir/i)
       ).toBeInTheDocument()
@@ -57,7 +86,7 @@ describe('WeekCalendar', () => {
 
   describe('Player Name Validation', () => {
     it('should enable calendar when a player is selected', async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       const select = screen.getByRole('combobox', {
         name: /selecione o jogador/i,
       })
@@ -73,7 +102,7 @@ describe('WeekCalendar', () => {
 
     it('should show alert when trying to create session without selecting player', async () => {
       const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       // Don't select any player
       const cells = screen
@@ -94,7 +123,7 @@ describe('WeekCalendar', () => {
     })
 
     it('should update required badge based on player selection', async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       const select = screen.getByRole('combobox', {
         name: /selecione o jogador/i,
       })
@@ -114,7 +143,7 @@ describe('WeekCalendar', () => {
 
   describe('Session Creation - Single Click', () => {
     beforeEach(async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       const select = screen.getByRole('combobox', {
         name: /selecione o jogador/i,
       })
@@ -175,7 +204,7 @@ describe('WeekCalendar', () => {
 
   describe('Session Creation - Drag', () => {
     beforeEach(async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       const select = screen.getByRole('combobox', {
         name: /selecione o jogador/i,
       })
@@ -222,7 +251,7 @@ describe('WeekCalendar', () => {
 
   describe('Session Deletion - Drag from Existing', () => {
     beforeEach(async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       const select = screen.getByRole('combobox', {
         name: /selecione o jogador/i,
       })
@@ -261,7 +290,7 @@ describe('WeekCalendar', () => {
 
   describe('Language Switching', () => {
     it('should switch to English when clicking EN button', async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       const enButton = screen.getByText('EN')
       await userEvent.click(enButton)
@@ -273,7 +302,7 @@ describe('WeekCalendar', () => {
     })
 
     it('should display Portuguese by default', () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       expect(
         screen.getByText('Agendador de Sessões de RPG')
       ).toBeInTheDocument()
@@ -283,7 +312,7 @@ describe('WeekCalendar', () => {
 
   describe('Visual Feedback', () => {
     it('should show drag preview when dragging', async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       const select = screen.getByRole('combobox', {
         name: /selecione o jogador/i,
       })
@@ -330,12 +359,12 @@ describe('WeekCalendar', () => {
 
   describe('Session Duration Display', () => {
     it('should display 3 hour duration', () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       expect(screen.getByText(/3 horas/i)).toBeInTheDocument()
     })
 
     it('should show start and end time on created sessions', async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       const select = screen.getByRole('combobox', {
         name: /selecione o jogador/i,
       })

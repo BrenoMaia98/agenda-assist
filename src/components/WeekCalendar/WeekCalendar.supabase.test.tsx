@@ -1,8 +1,10 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import '../i18n/config'
+import '../../i18n/config'
 import WeekCalendar from './WeekCalendar'
+import { CalendarProvider } from '../../contexts/CalendarContext'
+import type { ReactElement } from 'react'
 import {
   clearMockData,
   getMockChannel,
@@ -10,10 +12,18 @@ import {
   setMockSessionsData,
   supabase,
   triggerRealtimeUpdate,
-} from '../lib/__mocks__/supabase'
+} from '../../lib/__mocks__/supabase'
 
 // Mock the supabase module
-vi.mock('../lib/supabase', () => import('../lib/__mocks__/supabase'))
+vi.mock('../../lib/supabase', () => import('../../lib/__mocks__/supabase'))
+
+const renderWithProvider = (ui: ReactElement) => {
+  return render(
+    <CalendarProvider supabaseClient={supabase as any}>
+      {ui}
+    </CalendarProvider>
+  )
+}
 
 describe('WeekCalendar - Supabase Integration', () => {
   beforeEach(() => {
@@ -36,7 +46,7 @@ describe('WeekCalendar - Supabase Integration', () => {
       ]
       setMockSessionsData(mockSessions)
 
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       await waitFor(() => {
         expect(supabase.from).toHaveBeenCalledWith('sessions')
@@ -44,14 +54,14 @@ describe('WeekCalendar - Supabase Integration', () => {
     })
 
     it('should show loading state while fetching data', () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
       expect(screen.getByText(/carregando sessões/i)).toBeInTheDocument()
     })
 
     it('should handle database errors gracefully', async () => {
       setMockError({ message: 'Database error' })
 
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       await waitFor(() => {
         expect(screen.getByText(/falha ao carregar sessões/i)).toBeInTheDocument()
@@ -61,21 +71,21 @@ describe('WeekCalendar - Supabase Integration', () => {
 
   describe('View Mode Toggle', () => {
     it('should render view toggle buttons', () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       expect(screen.getByText(/minha disponibilidade/i)).toBeInTheDocument()
       expect(screen.getByText(/todos os jogadores/i)).toBeInTheDocument()
     })
 
     it('should start with "All Players" view selected', () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       const allPlayersButton = screen.getByText(/todos os jogadores/i)
       expect(allPlayersButton).toHaveStyle({ fontWeight: 'bold' })
     })
 
     it('should switch to personal view when clicked', async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       const myAvailabilityButton = screen.getByText(/minha disponibilidade/i)
       await userEvent.click(myAvailabilityButton)
@@ -97,7 +107,7 @@ describe('WeekCalendar - Supabase Integration', () => {
       ]
       setMockSessionsData(mockSessions)
 
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       // Wait for initial load
       await waitFor(() => {
@@ -128,7 +138,7 @@ describe('WeekCalendar - Supabase Integration', () => {
     })
 
     it('should show countdown indicator after creating session', async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       const select = screen.getByRole('combobox', { name: /selecione o jogador/i })
       await userEvent.selectOptions(select, 'Yshi')
@@ -146,7 +156,7 @@ describe('WeekCalendar - Supabase Integration', () => {
     })
 
     it('should update countdown as time passes', async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       const select = screen.getByRole('combobox', { name: /selecione o jogador/i })
       await userEvent.selectOptions(select, 'Yshi')
@@ -178,7 +188,7 @@ describe('WeekCalendar - Supabase Integration', () => {
 
   describe('Optimistic Updates', () => {
     it('should show countdown indicator when session created', async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       // Wait for loading to complete
       await waitFor(() => {
@@ -202,7 +212,7 @@ describe('WeekCalendar - Supabase Integration', () => {
     })
 
     it('should allow creating multiple sessions quickly', async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       // Wait for loading to complete
       await waitFor(() => {
@@ -232,7 +242,7 @@ describe('WeekCalendar - Supabase Integration', () => {
 
   describe('Real-time Subscriptions', () => {
     it('should set up real-time channel on mount', () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       expect(supabase.channel).toHaveBeenCalledWith('sessions-changes')
       const mockChannel = getMockChannel()
@@ -251,7 +261,7 @@ describe('WeekCalendar - Supabase Integration', () => {
 
   describe('Data Persistence', () => {
     it('should not call database insert immediately after change', async () => {
-      render(<WeekCalendar />)
+      renderWithProvider(<WeekCalendar />)
 
       // Wait for loading to complete
       await waitFor(() => {

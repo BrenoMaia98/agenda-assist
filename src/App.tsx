@@ -1,11 +1,14 @@
 import './App.css'
-import WeekCalendar from './components/WeekCalendar'
+import WeekCalendar from './components/WeekCalendar/WeekCalendar'
+import { CalendarProvider } from './contexts/CalendarContext'
 
 function App() {
   return (
-    <div className="app">
-      <WeekCalendar />
-    </div>
+    <CalendarProvider>
+      <div className="app">
+        <WeekCalendar />
+      </div>
+    </CalendarProvider>
   )
 }
 

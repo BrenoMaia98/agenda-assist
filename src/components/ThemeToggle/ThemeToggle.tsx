@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { Theme } from './types'
 import './ThemeToggle.css'
-
-type Theme = 'light' | 'dark' | 'auto'
 
 export default function ThemeToggle() {
   const { t } = useTranslation()
