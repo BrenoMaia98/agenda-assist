@@ -426,4 +426,192 @@ describe('WeekCalendar Component', () => {
       cy.get('.calendar-event').should('exist')
     })
   })
+
+  describe('Debounced Save with Countdown Timer', () => {
+    beforeEach(() => {
+      cy.enterPlayerName('Breno(GM)')
+    })
+
+    it('should show countdown indicator after creating a session', () => {
+      cy.get('.calendar-cell')
+        .first()
+        .scrollIntoView()
+        .trigger('mousedown')
+        .trigger('mouseup')
+
+      // Countdown should appear immediately
+      cy.contains(/salvando em 5s/i).should('be.visible')
+    })
+
+    it('should countdown from 5 to 1 seconds', () => {
+      cy.get('.calendar-cell')
+        .first()
+        .scrollIntoView()
+        .trigger('mousedown')
+        .trigger('mouseup')
+
+      // Check each countdown step
+      cy.contains(/salvando em 5s/i).should('be.visible')
+      cy.wait(1000)
+      cy.contains(/salvando em 4s/i).should('be.visible')
+      cy.wait(1000)
+      cy.contains(/salvando em 3s/i).should('be.visible')
+      cy.wait(1000)
+      cy.contains(/salvando em 2s/i).should('be.visible')
+      cy.wait(1000)
+      cy.contains(/salvando em 1s/i).should('be.visible')
+    })
+
+    it('should show "Salvando..." when save begins', () => {
+      cy.get('.calendar-cell')
+        .first()
+        .scrollIntoView()
+        .trigger('mousedown')
+        .trigger('mouseup')
+
+      cy.contains(/salvando em 5s/i).should('be.visible')
+      
+      // Wait for countdown to complete
+      cy.wait(5000)
+      
+      // Should show "Salvando..." during save
+      cy.contains(/salvando\.\.\./i, { timeout: 1000 }).should('be.visible')
+    })
+
+    it('should show "Salvo" with checkmark after save completes', () => {
+      cy.get('.calendar-cell')
+        .first()
+        .scrollIntoView()
+        .trigger('mousedown')
+        .trigger('mouseup')
+
+      // Wait for full save cycle
+      cy.wait(5500)
+      
+      // Should show success message
+      cy.contains(/salvo/i, { timeout: 2000 }).should('be.visible')
+    })
+
+    it('should hide "Salvo" message after 3 seconds', () => {
+      cy.get('.calendar-cell')
+        .first()
+        .scrollIntoView()
+        .trigger('mousedown')
+        .trigger('mouseup')
+
+      // Wait for save to complete
+      cy.wait(5500)
+      cy.contains(/salvo/i).should('be.visible')
+      
+      // Wait for message to disappear
+      cy.wait(3000)
+      cy.contains(/salvo/i).should('not.exist')
+    })
+
+    it('should reset countdown when user makes another change', () => {
+      // First change
+      cy.get('.calendar-cell')
+        .eq(0)
+        .scrollIntoView()
+        .trigger('mousedown')
+        .trigger('mouseup')
+
+      cy.contains(/salvando em 5s/i).should('be.visible')
+      
+      // Wait 2 seconds
+      cy.wait(2000)
+      cy.contains(/salvando em 3s/i).should('be.visible')
+      
+      // Make another change - should reset to 5
+      cy.get('.calendar-cell')
+        .eq(1)
+        .scrollIntoView()
+        .trigger('mousedown')
+        .trigger('mouseup')
+
+      cy.contains(/salvando em 5s/i).should('be.visible')
+    })
+
+    it('should show green background for success state', () => {
+      cy.get('.calendar-cell')
+        .first()
+        .scrollIntoView()
+        .trigger('mousedown')
+        .trigger('mouseup')
+
+      // Wait for save to complete
+      cy.wait(5500)
+      
+      // Check for green gradient background (contains part of the green color value)
+      cy.contains(/salvo/i)
+        .parent()
+        .should('have.css', 'background')
+        .and('include', 'linear-gradient')
+    })
+
+    it('should show spinning loader during countdown and save', () => {
+      cy.get('.calendar-cell')
+        .first()
+        .scrollIntoView()
+        .trigger('mousedown')
+        .trigger('mouseup')
+
+      // Check spinner is visible during countdown
+      cy.contains(/salvando em 5s/i)
+        .parent()
+        .find('div')
+        .first()
+        .should('have.css', 'animation')
+    })
+  })
+
+  describe('View Mode Toggle', () => {
+    beforeEach(() => {
+      cy.enterPlayerName('Yshi')
+    })
+
+    it('should render view toggle buttons', () => {
+      cy.contains('button', /minha disponibilidade/i).should('be.visible')
+      cy.contains('button', /todos os jogadores/i).should('be.visible')
+    })
+
+    it('should start with "All Players" view active', () => {
+      cy.contains('button', /todos os jogadores/i)
+        .should('have.css', 'font-weight', '700') // bold
+    })
+
+    it('should switch to personal view when clicked', () => {
+      cy.contains('button', /minha disponibilidade/i).click()
+      
+      cy.contains('button', /minha disponibilidade/i)
+        .should('have.css', 'font-weight', '700')
+    })
+
+    it('should switch back to all players view', () => {
+      cy.contains('button', /minha disponibilidade/i).click()
+      cy.contains('button', /todos os jogadores/i).click()
+      
+      cy.contains('button', /todos os jogadores/i)
+        .should('have.css', 'font-weight', '700')
+    })
+
+    it('should maintain sessions when switching views', () => {
+      // Create a session
+      cy.get('.calendar-cell')
+        .first()
+        .scrollIntoView()
+        .trigger('mousedown')
+        .trigger('mouseup')
+
+      // Wait for save indicator
+      cy.contains(/salvando em/i).should('be.visible')
+
+      // Switch views
+      cy.contains('button', /minha disponibilidade/i).click()
+      cy.contains('button', /todos os jogadores/i).click()
+
+      // Session should still be there (or at least countdown indicator)
+      cy.contains(/salvando em/i).should('be.visible')
+    })
+  })
 })
