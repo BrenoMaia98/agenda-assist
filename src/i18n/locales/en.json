@@ -54,6 +54,11 @@
     "saving": "Saving...",
     "savingIn": "Saving in {{seconds}}s",
     "saved": "Saved"
+  },
+  "playerModal": {
+    "title": "Who are you?",
+    "description": "Select your player to personalize your experience",
+    "confirmButton": "Confirm"
   }
 }
 

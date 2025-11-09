@@ -25,9 +25,11 @@ export interface CalendarContextType {
   // Core state
   events: CalendarEvent[]
   playerName: string
+  currentUser: string
   viewMode: ViewMode
   loading: boolean
   error: string | null
+  showPlayerModal: boolean
   
   // Drag state
   isDragging: boolean
@@ -42,6 +44,7 @@ export interface CalendarContextType {
   
   // Actions
   setPlayerName: (name: string) => void
+  setCurrentUser: (name: string) => void
   setViewMode: (mode: ViewMode) => void
   loadSessions: () => Promise<void>
   handleMouseDown: (day: number, hour: number) => void

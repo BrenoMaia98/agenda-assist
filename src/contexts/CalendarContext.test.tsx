@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { supabase } from '../lib/supabase'
 import { CalendarProvider, useCalendar } from './CalendarContext'
 
 // Mock the translation hook
@@ -9,6 +10,28 @@ vi.mock('react-i18next', () => ({
     t: (key: string) => key,
   }),
 }))
+
+// Mock localStorage
+const localStorageMock = (() => {
+  let store: Record<string, string> = {}
+
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value
+    },
+    removeItem: (key: string) => {
+      delete store[key]
+    },
+    clear: () => {
+      store = {}
+    },
+  }
+})()
+
+Object.defineProperty(global, 'localStorage', {
+  value: localStorageMock,
+})
 
 // Mock Supabase client factory function
 const createMockSupabase = () => {
@@ -45,9 +68,12 @@ describe('CalendarContext', () => {
   let wrapper: ({ children }: { children: ReactNode }) => JSX.Element
 
   beforeEach(() => {
+    localStorage.clear()
     mockSupabase = createMockSupabase()
     wrapper = ({ children }: { children: ReactNode }) => (
-      <CalendarProvider supabaseClient={mockSupabase as any}>
+      <CalendarProvider
+        supabaseClient={mockSupabase as unknown as typeof supabase}
+      >
         {children}
       </CalendarProvider>
     )
@@ -56,6 +82,7 @@ describe('CalendarContext', () => {
   afterEach(() => {
     vi.clearAllTimers()
     vi.clearAllMocks()
+    localStorage.clear()
   })
 
   describe('Initial State', () => {
@@ -64,6 +91,7 @@ describe('CalendarContext', () => {
 
       expect(result.current.events).toEqual([])
       expect(result.current.playerName).toBe('')
+      expect(result.current.currentUser).toBe('')
       expect(result.current.viewMode).toBe('all')
       expect(result.current.loading).toBe(true) // starts true, then loads
       expect(result.current.error).toBeNull()
@@ -71,6 +99,7 @@ describe('CalendarContext', () => {
       expect(result.current.dragStart).toBeNull()
       expect(result.current.dragEnd).toBeNull()
       expect(result.current.SESSION_DURATION).toBe(3)
+      expect(result.current.showPlayerModal).toBe(true) // starts true when no currentUser
     })
 
     it('should throw error when used outside provider', () => {
@@ -95,6 +124,39 @@ describe('CalendarContext', () => {
       })
 
       expect(result.current.playerName).toBe('TestPlayer')
+    })
+  })
+
+  describe('Current User Management', () => {
+    it('should update current user and save to localStorage', () => {
+      const { result } = renderHook(() => useCalendar(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentUser('TestPlayer')
+      })
+
+      expect(result.current.currentUser).toBe('TestPlayer')
+      expect(localStorage.getItem('agendaAssist_currentUser')).toBe(
+        'TestPlayer'
+      )
+      expect(result.current.showPlayerModal).toBe(false)
+      expect(result.current.playerName).toBe('TestPlayer')
+    })
+
+    it('should load current user from localStorage on initialization', () => {
+      localStorage.setItem('agendaAssist_currentUser', 'StoredPlayer')
+
+      const { result } = renderHook(() => useCalendar(), { wrapper })
+
+      expect(result.current.currentUser).toBe('StoredPlayer')
+      expect(result.current.showPlayerModal).toBe(false)
+    })
+
+    it('should show player modal when no current user is set', () => {
+      const { result } = renderHook(() => useCalendar(), { wrapper })
+
+      expect(result.current.currentUser).toBe('')
+      expect(result.current.showPlayerModal).toBe(true)
     })
   })
 

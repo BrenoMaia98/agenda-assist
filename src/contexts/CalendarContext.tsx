@@ -37,6 +37,11 @@ export const CalendarProvider = ({
   // Core state
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [playerName, setPlayerName] = useState('')
+  const [currentUser, setCurrentUserState] = useState(() => {
+    // Load from localStorage on initialization
+    return localStorage.getItem('agendaAssist_currentUser') || ''
+  })
+  const [showPlayerModal, setShowPlayerModal] = useState(!currentUser)
   const [viewMode, setViewMode] = useState<ViewMode>('all')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -378,6 +383,15 @@ export const CalendarProvider = ({
     scheduleSave,
   ])
   
+  // Set current user and save to localStorage
+  const setCurrentUser = useCallback((name: string) => {
+    setCurrentUserState(name)
+    localStorage.setItem('agendaAssist_currentUser', name)
+    setShowPlayerModal(false)
+    // Automatically set the player name to the current user
+    setPlayerName(name)
+  }, [])
+  
   // Get filtered events based on view mode
   const getFilteredEvents = useCallback(() => {
     return viewMode === 'personal'
@@ -389,9 +403,11 @@ export const CalendarProvider = ({
     // Core state
     events,
     playerName,
+    currentUser,
     viewMode,
     loading,
     error,
+    showPlayerModal,
     
     // Drag state
     isDragging,
@@ -406,6 +422,7 @@ export const CalendarProvider = ({
     
     // Actions
     setPlayerName,
+    setCurrentUser,
     setViewMode,
     loadSessions,
     handleMouseDown,

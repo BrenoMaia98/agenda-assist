@@ -1,13 +1,27 @@
 import './App.css'
+import PlayerSelectionModal from './components/PlayerSelectionModal'
 import WeekCalendar from './components/WeekCalendar/WeekCalendar'
-import { CalendarProvider } from './contexts/CalendarContext'
+import { CalendarProvider, useCalendar } from './contexts/CalendarContext'
+
+function AppContent() {
+  const { showPlayerModal, setCurrentUser } = useCalendar()
+
+  return (
+    <>
+      {showPlayerModal && (
+        <PlayerSelectionModal onPlayerSelect={setCurrentUser} />
+      )}
+      <div className="app">
+        <WeekCalendar />
+      </div>
+    </>
+  )
+}
 
 function App() {
   return (
     <CalendarProvider>
-      <div className="app">
-        <WeekCalendar />
-      </div>
+      <AppContent />
     </CalendarProvider>
   )
 }

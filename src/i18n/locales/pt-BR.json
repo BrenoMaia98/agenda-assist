@@ -54,5 +54,10 @@
     "saving": "Salvando...",
     "savingIn": "Salvando em {{seconds}}s",
     "saved": "Salvo"
+  },
+  "playerModal": {
+    "title": "Quem é você?",
+    "description": "Selecione seu jogador para personalizar sua experiência",
+    "confirmButton": "Confirmar"
   }
 }
