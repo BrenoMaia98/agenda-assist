@@ -113,6 +113,62 @@
   color: var(--text-dark-secondary);
 }
 
+.session-player {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 2rem;
+  border-left: 2px solid var(--border-dark-secondary);
+  position: relative;
+}
+
+.session-player label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-dark-secondary);
+}
+
+.player-name-select {
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: 1px solid var(--border-dark-secondary);
+  border-radius: 6px;
+  background-color: var(--bg-dark-primary);
+  color: var(--text-dark-white);
+  min-width: 200px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.player-name-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.player-name-select:hover {
+  border-color: var(--color-primary);
+}
+
+.change-user-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-dark-secondary);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dark-secondary);
+  cursor: pointer;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.change-user-button:hover {
+  background-color: var(--bg-dark-tertiary);
+  border-color: var(--color-primary);
+  color: var(--text-dark-white);
+}
+
 .setting-field {
   display: flex;
   align-items: center;
@@ -299,7 +355,7 @@
   border-right: 1px solid var(--border-dark-secondary);
   background-color: var(--bg-dark-primary);
   z-index: 10;
-  min-height: 40px;
+  min-height: 50px;
 }
 
 .time-label.half-hour {
@@ -307,7 +363,7 @@
 }
 
 .calendar-cell {
-  min-height: 40px;
+  min-height: 50px;
   border-bottom: 1px solid var(--border-dark-primary);
   border-left: 1px solid var(--border-dark-primary);
   cursor: pointer;
@@ -335,6 +391,11 @@
 .calendar-cell.all-players-available {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   border: 2px solid #047857;
+}
+
+.calendar-cell.dimmed {
+  opacity: 0.3;
+  filter: grayscale(50%);
 }
 
 .cell-overlay {
@@ -451,12 +512,37 @@
   font-weight: 600;
   color: white;
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.2;
   word-break: break-word;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.session-info-display {
+  display: flex;
+  flex-direction: row;
+  gap: 0.3rem;
+  align-items: center;
+  white-space: nowrap;
+  font-size: 0.65rem;
+}
+
+.player-name-display {
+  font-weight: 700;
+  font-size: 0.65rem;
+}
+
+.session-time-display {
+  font-size: 0.55rem;
+  font-weight: 500;
+  opacity: 0.85;
 }
 
 .all-available-badge {
-  margin-top: 0.25rem;
+  margin: auto;
   font-size: 0.65rem;
   font-weight: 700;
   color: white;
@@ -465,6 +551,7 @@
   border-radius: 4px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-align: center;
 }
 
 /* Light mode */
@@ -493,6 +580,34 @@
 
   .session-duration label {
     color: var(--text-light-secondary);
+  }
+
+  .session-player {
+    border-left-color: var(--border-light-tertiary);
+  }
+
+  .session-player label {
+    color: var(--text-light-secondary);
+  }
+
+  .player-name-select {
+    background-color: var(--bg-light-primary);
+    color: var(--text-light-secondary);
+    border-color: var(--border-light-tertiary);
+  }
+
+  .player-name-select:focus {
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+
+  .change-user-button {
+    border-color: var(--border-light-tertiary);
+    color: var(--text-light-secondary);
+  }
+
+  .change-user-button:hover {
+    background-color: var(--bg-light-tertiary);
+    color: var(--text-light-primary);
   }
 
   .setting-field label {
@@ -564,6 +679,11 @@
   .calendar-cell.all-players-available {
     background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
     border: 2px solid #059669;
+  }
+
+  .calendar-cell.dimmed {
+    opacity: 0.3;
+    filter: grayscale(50%);
   }
 
   .cell-overlay {

@@ -97,6 +97,27 @@ const WeekCalendar = () => {
     return Array.from(playersStarting)
   }
 
+  // Helper function to get session info (player name with start/end time)
+  const getSessionsStartingAt = (day: number, hour: number) => {
+    const sessions: Array<{
+      playerName: string
+      startHour: number
+      endHour: number
+    }> = []
+
+    events.forEach(event => {
+      if (event.day === day && event.startHour === hour && event.player_name) {
+        sessions.push({
+          playerName: event.player_name,
+          startHour: event.startHour,
+          endHour: event.startHour + event.duration,
+        })
+      }
+    })
+
+    return sessions
+  }
+
   return (
     <div
       className="week-calendar"
@@ -110,51 +131,6 @@ const WeekCalendar = () => {
             <ThemeToggle />
             <LanguageSwitcher />
           </div>
-        </div>
-
-        <div
-          className="view-toggle"
-          style={{
-            padding: '0.5rem 1rem',
-            display: 'flex',
-            gap: '1rem',
-            justifyContent: 'center',
-          }}
-        >
-          <button
-            onClick={() => setViewMode('personal')}
-            className={viewMode === 'personal' ? 'active' : ''}
-            style={{
-              padding: '0.5rem 1rem',
-              border: '1px solid var(--border-color)',
-              borderRadius: '4px',
-              background:
-                viewMode === 'personal'
-                  ? 'var(--primary-color)'
-                  : 'transparent',
-              color: viewMode === 'personal' ? 'white' : 'var(--text-color)',
-              cursor: 'pointer',
-              fontWeight: viewMode === 'personal' ? 'bold' : 'normal',
-            }}
-          >
-            {t('view.myAvailability')}
-          </button>
-          <button
-            onClick={() => setViewMode('all')}
-            className={viewMode === 'all' ? 'active' : ''}
-            style={{
-              padding: '0.5rem 1rem',
-              border: '1px solid var(--border-color)',
-              borderRadius: '4px',
-              background:
-                viewMode === 'all' ? 'var(--primary-color)' : 'transparent',
-              color: viewMode === 'all' ? 'white' : 'var(--text-color)',
-              cursor: 'pointer',
-              fontWeight: viewMode === 'all' ? 'bold' : 'normal',
-            }}
-          >
-            {t('view.allPlayers')}
-          </button>
         </div>
 
         {loading && (
@@ -181,8 +157,18 @@ const WeekCalendar = () => {
           </div>
         )}
 
-        <div className="player-info">
-          <div className="setting-field player-name-field">
+        <div className="session-info">
+          <div className="session-title-display">
+            <span className="session-label">{t('session.label')}</span>
+            <h2 className="session-title">{t('session.title')}</h2>
+          </div>
+          <div className="session-duration">
+            <label>{t('session.duration')}</label>
+            <span className="duration-value">
+              {SESSION_DURATION} {t('session.hours')}
+            </span>
+          </div>
+          <div className="session-player">
             <label htmlFor="player-name">{t('player.label')}</label>
             <div
               style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}
@@ -191,7 +177,7 @@ const WeekCalendar = () => {
                 id="player-name"
                 value={playerName}
                 onChange={e => setPlayerName(e.target.value)}
-                className="player-name-input"
+                className="player-name-select"
                 required
               >
                 <option value="">{t('player.placeholder')}</option>
@@ -206,16 +192,7 @@ const WeekCalendar = () => {
               {currentUser && (
                 <button
                   onClick={() => setShowPlayerModal(true)}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '4px',
-                    background: 'transparent',
-                    color: 'var(--text-color)',
-                    cursor: 'pointer',
-                    fontSize: '0.875rem',
-                    whiteSpace: 'nowrap',
-                  }}
+                  className="change-user-button"
                   title={t('player.changeUser')}
                 >
                   {t('player.changeUser')}
@@ -227,18 +204,65 @@ const WeekCalendar = () => {
             )}
           </div>
         </div>
-
-        <div className="session-info">
-          <div className="session-title-display">
-            <span className="session-label">{t('session.label')}</span>
-            <h2 className="session-title">{t('session.title')}</h2>
-          </div>
-          <div className="session-duration">
-            <label>{t('session.duration')}</label>
-            <span className="duration-value">
-              {SESSION_DURATION} {t('session.hours')}
-            </span>
-          </div>
+        <div
+          className="view-toggle"
+          style={{
+            padding: '0.5rem 1rem',
+            display: 'flex',
+            gap: '1rem',
+            justifyContent: 'center',
+          }}
+        >
+          <button
+            onClick={() => setViewMode('personal')}
+            className={viewMode === 'personal' ? 'active' : ''}
+            style={{
+              padding: '0.5rem 1rem',
+              border:
+                viewMode === 'personal'
+                  ? '2px solid var(--color-primary)'
+                  : '1px solid var(--border-color)',
+              borderRadius: '4px',
+              background:
+                viewMode === 'personal'
+                  ? 'var(--primary-color)'
+                  : 'transparent',
+              color: viewMode === 'personal' ? 'white' : 'var(--text-color)',
+              cursor: 'pointer',
+              fontWeight: viewMode === 'personal' ? 'bold' : 'normal',
+              boxShadow:
+                viewMode === 'personal'
+                  ? '0 0 0 2px rgba(139, 92, 246, 0.2)'
+                  : 'none',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            {t('view.myAvailability')}
+          </button>
+          <button
+            onClick={() => setViewMode('all')}
+            className={viewMode === 'all' ? 'active' : ''}
+            style={{
+              padding: '0.5rem 1rem',
+              border:
+                viewMode === 'all'
+                  ? '2px solid var(--color-primary)'
+                  : '1px solid var(--border-color)',
+              borderRadius: '4px',
+              background:
+                viewMode === 'all' ? 'var(--primary-color)' : 'transparent',
+              color: viewMode === 'all' ? 'white' : 'var(--text-color)',
+              cursor: 'pointer',
+              fontWeight: viewMode === 'all' ? 'bold' : 'normal',
+              boxShadow:
+                viewMode === 'all'
+                  ? '0 0 0 2px rgba(139, 92, 246, 0.2)'
+                  : 'none',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            {t('view.allPlayers')}
+          </button>
         </div>
       </div>
 
@@ -348,6 +372,8 @@ const WeekCalendar = () => {
                   // Get all players available at this time slot (for highlighting)
                   const playersAtSlot = getPlayersAtTimeSlot(dayIndex, timeSlot)
                   const hasPlayers = playersAtSlot.length > 0
+
+                  // Cell should be green if all players are available (even if overlapping)
                   const allPlayersAvailable =
                     playersAtSlot.length === ALL_PLAYERS.length
 
@@ -356,7 +382,15 @@ const WeekCalendar = () => {
                     dayIndex,
                     timeSlot
                   )
+                  const sessionsStarting = getSessionsStartingAt(
+                    dayIndex,
+                    timeSlot
+                  )
                   const hasStartingSessions = playersStarting.length > 0
+
+                  // Only show badge message if ALL players are STARTING at this cell
+                  const showAllPlayersMessage =
+                    playersStarting.length === ALL_PLAYERS.length
 
                   // Check if we should show this cell (based on view mode and filters)
                   const shouldShowCell =
@@ -379,10 +413,22 @@ const WeekCalendar = () => {
                       timeSlot <= maxHour
                   }
 
+                  // Check if this cell should be dimmed
+                  // Dim if: 1) in all-players view and doesn't include selected player
+                  //         2) has players but is not a starting point (continuation cell)
+                  // BUT: Never dim green cells (where all players are available)
+                  const shouldDim =
+                    !allPlayersAvailable &&
+                    ((viewMode === 'all' &&
+                      playerName.trim().length >= 3 &&
+                      hasPlayers &&
+                      !playersAtSlot.includes(playerName)) ||
+                      (hasPlayers && !hasStartingSessions))
+
                   return (
                     <div
                       key={`cell-${dayIndex}-${timeSlot}`}
-                      className={`calendar-cell ${!isFullHour ? 'half-hour' : ''} ${hasPlayers && shouldShowCell ? 'has-availability' : ''} ${allPlayersAvailable && shouldShowCell ? 'all-players-available' : ''} ${isInDragSelection ? 'drag-preview' : ''}`}
+                      className={`calendar-cell ${!isFullHour ? 'half-hour' : ''} ${hasPlayers && shouldShowCell ? 'has-availability' : ''} ${allPlayersAvailable && shouldShowCell ? 'all-players-available' : ''} ${isInDragSelection ? 'drag-preview' : ''} ${shouldDim ? 'dimmed' : ''}`}
                       onMouseDown={() => handleMouseDown(dayIndex, timeSlot)}
                       onMouseEnter={() => handleMouseEnter(dayIndex, timeSlot)}
                     >
@@ -392,14 +438,37 @@ const WeekCalendar = () => {
                       {/* Show player names ONLY at session starting points */}
                       {hasStartingSessions && shouldShowCell && (
                         <div
-                          className={`availability-indicator ${allPlayersAvailable ? 'all-available' : ''}`}
+                          className={`availability-indicator ${showAllPlayersMessage ? 'all-available' : ''}`}
                         >
-                          <div className="players-list">
-                            {playersStarting.join(', ')}
-                          </div>
-                          {allPlayersAvailable && (
-                            <div className="all-available-badge">
-                              ✓ {t('calendar.allPlayersAvailable')}
+                          {showAllPlayersMessage ? (
+                            // When all players agreed, show time range and badge
+                            <>
+                              <div
+                                className="session-time-display"
+                                style={{ marginBottom: '0.25rem' }}
+                              >
+                                {formatTime(sessionsStarting[0].startHour)}-
+                                {formatTime(sessionsStarting[0].endHour)}
+                              </div>
+                              <div className="all-available-badge">
+                                ✓ {t('calendar.allPlayersAvailable')}
+                              </div>
+                            </>
+                          ) : (
+                            // Otherwise, show time range once and player names joined by commas
+                            <div className="players-list">
+                              <div
+                                className="session-time-display"
+                                style={{ marginBottom: '0.25rem' }}
+                              >
+                                {formatTime(sessionsStarting[0].startHour)}-
+                                {formatTime(sessionsStarting[0].endHour)}
+                              </div>
+                              <div className="player-name-display">
+                                {sessionsStarting
+                                  .map(s => s.playerName)
+                                  .join(', ')}
+                              </div>
                             </div>
                           )}
                         </div>
