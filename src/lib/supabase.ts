@@ -20,3 +20,10 @@ export interface Session {
   created_at: string
 }
 
+export interface Player {
+  id: string
+  name: string
+  is_gm: boolean
+  created_at: string
+}
+

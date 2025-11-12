@@ -1,6 +1,7 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCalendar } from '../../contexts/CalendarContext'
+import { supabase, type Player } from '../../lib/supabase'
 import LanguageSwitcher from '../LanguageSwitcher'
 import ThemeToggle from '../ThemeToggle'
 import './WeekCalendar.css'
@@ -29,16 +30,46 @@ const WeekCalendar = () => {
     events,
   } = useCalendar()
 
-  // All possible players
-  const ALL_PLAYERS = [
-    'Breno(GM)',
-    'Nalu',
-    'Yshi',
-    'Drefon',
-    'Frizon',
-    'Tinga',
-    'Zangs',
-  ]
+  // Load players from database
+  const [players, setPlayers] = useState<Player[]>([])
+
+  useEffect(() => {
+    const loadPlayers = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('players')
+          .select('*')
+          .order('name')
+
+        if (error) throw error
+        setPlayers(data || [])
+      } catch (err) {
+        console.error('Error loading players:', err)
+      }
+    }
+
+    loadPlayers()
+
+    // Set up real-time subscription for players
+    const channel = supabase
+      .channel('players-changes-calendar')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'players',
+        },
+        () => {
+          loadPlayers()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   // Generate time slots with 30-minute intervals (0, 0.5, 1, 1.5, ... 23.5)
   const timeSlots = Array.from({ length: 48 }, (_, i) => i * 0.5)
@@ -181,13 +212,12 @@ const WeekCalendar = () => {
                 required
               >
                 <option value="">{t('player.placeholder')}</option>
-                <option value="Breno(GM)">Breno(GM)</option>
-                <option value="Nalu">Nalu</option>
-                <option value="Yshi">Yshi</option>
-                <option value="Drefon">Drefon</option>
-                <option value="Frizon">Frizon</option>
-                <option value="Tinga">Tinga</option>
-                <option value="Zangs">Zangs</option>
+                {players.map(player => (
+                  <option key={player.id} value={player.name}>
+                    {player.name}
+                    {player.is_gm ? ' (GM)' : ''}
+                  </option>
+                ))}
               </select>
               {currentUser && (
                 <button
@@ -375,7 +405,7 @@ const WeekCalendar = () => {
 
                   // Cell should be green if all players are available (even if overlapping)
                   const allPlayersAvailable =
-                    playersAtSlot.length === ALL_PLAYERS.length
+                    playersAtSlot.length === players.length
 
                   // Get players whose sessions START at this time slot (for display)
                   const playersStarting = getPlayersStartingAt(
@@ -390,7 +420,7 @@ const WeekCalendar = () => {
 
                   // Only show badge message if ALL players are STARTING at this cell
                   const showAllPlayersMessage =
-                    playersStarting.length === ALL_PLAYERS.length
+                    playersStarting.length === players.length
 
                   // Check if we should show this cell (based on view mode and filters)
                   const shouldShowCell =
