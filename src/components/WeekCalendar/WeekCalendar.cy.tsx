@@ -331,7 +331,7 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
-      cy.get('.event-title').should('contain', 'Campanha')
+      cy.get('.player-name').should('contain', 'Campanha')
     })
 
     it('should display session time range', () => {
@@ -470,10 +470,10 @@ describe('WeekCalendar Component', () => {
         .trigger('mouseup')
 
       cy.contains(/salvando em 5s/i).should('be.visible')
-      
+
       // Wait for countdown to complete
       cy.wait(5000)
-      
+
       // Should show "Salvando..." during save
       cy.contains(/salvando\.\.\./i, { timeout: 1000 }).should('be.visible')
     })
@@ -487,7 +487,7 @@ describe('WeekCalendar Component', () => {
 
       // Wait for full save cycle
       cy.wait(5500)
-      
+
       // Should show success message
       cy.contains(/salvo/i, { timeout: 2000 }).should('be.visible')
     })
@@ -502,7 +502,7 @@ describe('WeekCalendar Component', () => {
       // Wait for save to complete
       cy.wait(5500)
       cy.contains(/salvo/i).should('be.visible')
-      
+
       // Wait for message to disappear
       cy.wait(3000)
       cy.contains(/salvo/i).should('not.exist')
@@ -517,11 +517,11 @@ describe('WeekCalendar Component', () => {
         .trigger('mouseup')
 
       cy.contains(/salvando em 5s/i).should('be.visible')
-      
+
       // Wait 2 seconds
       cy.wait(2000)
       cy.contains(/salvando em 3s/i).should('be.visible')
-      
+
       // Make another change - should reset to 5
       cy.get('.calendar-cell')
         .eq(1)
@@ -541,7 +541,7 @@ describe('WeekCalendar Component', () => {
 
       // Wait for save to complete
       cy.wait(5500)
-      
+
       // Check for green gradient background (contains part of the green color value)
       cy.contains(/salvo/i)
         .parent()
@@ -576,23 +576,32 @@ describe('WeekCalendar Component', () => {
     })
 
     it('should start with "All Players" view active', () => {
-      cy.contains('button', /todos os jogadores/i)
-        .should('have.css', 'font-weight', '700') // bold
+      cy.contains('button', /todos os jogadores/i).should(
+        'have.css',
+        'font-weight',
+        '700'
+      ) // bold
     })
 
     it('should switch to personal view when clicked', () => {
       cy.contains('button', /minha disponibilidade/i).click()
-      
-      cy.contains('button', /minha disponibilidade/i)
-        .should('have.css', 'font-weight', '700')
+
+      cy.contains('button', /minha disponibilidade/i).should(
+        'have.css',
+        'font-weight',
+        '700'
+      )
     })
 
     it('should switch back to all players view', () => {
       cy.contains('button', /minha disponibilidade/i).click()
       cy.contains('button', /todos os jogadores/i).click()
-      
-      cy.contains('button', /todos os jogadores/i)
-        .should('have.css', 'font-weight', '700')
+
+      cy.contains('button', /todos os jogadores/i).should(
+        'have.css',
+        'font-weight',
+        '700'
+      )
     })
 
     it('should maintain sessions when switching views', () => {

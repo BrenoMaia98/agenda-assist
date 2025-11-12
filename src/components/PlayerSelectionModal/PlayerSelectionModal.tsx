@@ -5,6 +5,7 @@ import './PlayerSelectionModal.css'
 
 interface PlayerSelectionModalProps {
   onPlayerSelect: (playerName: string) => void
+  currentUser?: string
 }
 
 const PLAYERS = [
@@ -17,9 +18,9 @@ const PLAYERS = [
   'Zangs',
 ]
 
-const PlayerSelectionModal = ({ onPlayerSelect }: PlayerSelectionModalProps) => {
+const PlayerSelectionModal = ({ onPlayerSelect, currentUser = '' }: PlayerSelectionModalProps) => {
   const { t } = useTranslation()
-  const [selectedPlayer, setSelectedPlayer] = useState('')
+  const [selectedPlayer, setSelectedPlayer] = useState(currentUser)
 
   const handleConfirm = () => {
     if (selectedPlayer) {

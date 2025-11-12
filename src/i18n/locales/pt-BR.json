@@ -7,7 +7,8 @@
     "placeholder": "Escolha um jogador...",
     "required": "Obrigatório",
     "more": "faltam",
-    "minLengthError": "Por favor, selecione um jogador"
+    "minLengthError": "Por favor, selecione um jogador",
+    "changeUser": "Trocar Usuário"
   },
   "session": {
     "label": "Sessão:",
@@ -28,7 +29,8 @@
   "calendar": {
     "overlayMessage": "Por favor, selecione seu jogador para interagir com o calendário",
     "deleteConfirm": "Excluir este evento?",
-    "selectTimeSlot": "Por favor, selecione um horário"
+    "selectTimeSlot": "Por favor, selecione um horário",
+    "allPlayersAvailable": "Todos os Jogadores Disponíveis"
   },
   "days": {
     "sunday": "Domingo",

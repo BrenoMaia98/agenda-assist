@@ -10,8 +10,10 @@ const WeekCalendar = () => {
   const {
     playerName,
     setPlayerName,
+    currentUser,
     viewMode,
     setViewMode,
+    setShowPlayerModal,
     loading,
     error,
     isDragging,
@@ -24,8 +26,19 @@ const WeekCalendar = () => {
     handleMouseDown,
     handleMouseEnter,
     handleMouseUp,
-    getFilteredEvents,
+    events,
   } = useCalendar()
+
+  // All possible players
+  const ALL_PLAYERS = [
+    'Breno(GM)',
+    'Nalu',
+    'Yshi',
+    'Drefon',
+    'Frizon',
+    'Tinga',
+    'Zangs',
+  ]
 
   // Generate time slots with 30-minute intervals (0, 0.5, 1, 1.5, ... 23.5)
   const timeSlots = Array.from({ length: 48 }, (_, i) => i * 0.5)
@@ -50,8 +63,39 @@ const WeekCalendar = () => {
     return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`
   }
 
-  // Get filtered events from context
-  const filteredEvents = getFilteredEvents()
+  // Helper function to get all players available at a specific time slot
+  const getPlayersAtTimeSlot = (day: number, hour: number) => {
+    const playersAvailable = new Set<string>()
+
+    // Check all events (not filtered) to see which players are available
+    events.forEach(event => {
+      // Check if this event covers this time slot
+      if (
+        event.day === day &&
+        hour >= event.startHour &&
+        hour < event.startHour + event.duration
+      ) {
+        if (event.player_name) {
+          playersAvailable.add(event.player_name)
+        }
+      }
+    })
+
+    return Array.from(playersAvailable)
+  }
+
+  // Helper function to get players whose sessions START at a specific time slot
+  const getPlayersStartingAt = (day: number, hour: number) => {
+    const playersStarting = new Set<string>()
+
+    events.forEach(event => {
+      if (event.day === day && event.startHour === hour && event.player_name) {
+        playersStarting.add(event.player_name)
+      }
+    })
+
+    return Array.from(playersStarting)
+  }
 
   return (
     <div
@@ -140,22 +184,44 @@ const WeekCalendar = () => {
         <div className="player-info">
           <div className="setting-field player-name-field">
             <label htmlFor="player-name">{t('player.label')}</label>
-            <select
-              id="player-name"
-              value={playerName}
-              onChange={e => setPlayerName(e.target.value)}
-              className="player-name-input"
-              required
+            <div
+              style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}
             >
-              <option value="">{t('player.placeholder')}</option>
-              <option value="Breno(GM)">Breno(GM)</option>
-              <option value="Nalu">Nalu</option>
-              <option value="Yshi">Yshi</option>
-              <option value="Drefon">Drefon</option>
-              <option value="Frizon">Frizon</option>
-              <option value="Tinga">Tinga</option>
-              <option value="Zangs">Zangs</option>
-            </select>
+              <select
+                id="player-name"
+                value={playerName}
+                onChange={e => setPlayerName(e.target.value)}
+                className="player-name-input"
+                required
+              >
+                <option value="">{t('player.placeholder')}</option>
+                <option value="Breno(GM)">Breno(GM)</option>
+                <option value="Nalu">Nalu</option>
+                <option value="Yshi">Yshi</option>
+                <option value="Drefon">Drefon</option>
+                <option value="Frizon">Frizon</option>
+                <option value="Tinga">Tinga</option>
+                <option value="Zangs">Zangs</option>
+              </select>
+              {currentUser && (
+                <button
+                  onClick={() => setShowPlayerModal(true)}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '4px',
+                    background: 'transparent',
+                    color: 'var(--text-color)',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem',
+                    whiteSpace: 'nowrap',
+                  }}
+                  title={t('player.changeUser')}
+                >
+                  {t('player.changeUser')}
+                </button>
+              )}
+            </div>
             {playerName.trim().length === 0 && (
               <span className="required-badge">{t('player.required')}</span>
             )}
@@ -279,19 +345,24 @@ const WeekCalendar = () => {
 
                 {/* Day cells */}
                 {daysOfWeek.map((_, dayIndex) => {
-                  // Events that start at this exact time slot
-                  const startingEvents = filteredEvents.filter(
-                    e => e.day === dayIndex && e.startHour === timeSlot
-                  )
+                  // Get all players available at this time slot (for highlighting)
+                  const playersAtSlot = getPlayersAtTimeSlot(dayIndex, timeSlot)
+                  const hasPlayers = playersAtSlot.length > 0
+                  const allPlayersAvailable =
+                    playersAtSlot.length === ALL_PLAYERS.length
 
-                  // Check if this cell is covered by any event (but doesn't start here)
-                  const coveredByEvents = filteredEvents.filter(
-                    e =>
-                      e.day === dayIndex &&
-                      timeSlot > e.startHour &&
-                      timeSlot < e.startHour + e.duration
+                  // Get players whose sessions START at this time slot (for display)
+                  const playersStarting = getPlayersStartingAt(
+                    dayIndex,
+                    timeSlot
                   )
-                  const isCovered = coveredByEvents.length > 0
+                  const hasStartingSessions = playersStarting.length > 0
+
+                  // Check if we should show this cell (based on view mode and filters)
+                  const shouldShowCell =
+                    viewMode === 'all' ||
+                    (viewMode === 'personal' &&
+                      playersAtSlot.includes(playerName))
 
                   // Check if this cell is in the drag selection
                   let isInDragSelection = false
@@ -311,29 +382,28 @@ const WeekCalendar = () => {
                   return (
                     <div
                       key={`cell-${dayIndex}-${timeSlot}`}
-                      className={`calendar-cell ${!isFullHour ? 'half-hour' : ''} ${isCovered ? 'covered' : ''} ${isInDragSelection ? 'drag-preview' : ''}`}
+                      className={`calendar-cell ${!isFullHour ? 'half-hour' : ''} ${hasPlayers && shouldShowCell ? 'has-availability' : ''} ${allPlayersAvailable && shouldShowCell ? 'all-players-available' : ''} ${isInDragSelection ? 'drag-preview' : ''}`}
                       onMouseDown={() => handleMouseDown(dayIndex, timeSlot)}
                       onMouseEnter={() => handleMouseEnter(dayIndex, timeSlot)}
                     >
-                      {/* Translucent overlay for covered cells */}
-                      {isCovered && <div className="cell-overlay" />}
-
                       {/* Drag preview overlay */}
                       {isInDragSelection && <div className="drag-overlay" />}
 
-                      {/* Only render events that start at this time slot */}
-                      {startingEvents.map(event => (
+                      {/* Show player names ONLY at session starting points */}
+                      {hasStartingSessions && shouldShowCell && (
                         <div
-                          key={event.id}
-                          className="calendar-event starting-event"
+                          className={`availability-indicator ${allPlayersAvailable ? 'all-available' : ''}`}
                         >
-                          <div className="event-title">{event.title}</div>
-                          <div className="event-time">
-                            {formatTime(event.startHour)} -{' '}
-                            {formatTime(event.startHour + event.duration)}
+                          <div className="players-list">
+                            {playersStarting.join(', ')}
                           </div>
+                          {allPlayersAvailable && (
+                            <div className="all-available-badge">
+                              ✓ {t('calendar.allPlayersAvailable')}
+                            </div>
+                          )}
                         </div>
-                      ))}
+                      )}
                     </div>
                   )
                 })}
