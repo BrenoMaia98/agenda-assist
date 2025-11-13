@@ -3,12 +3,14 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
+import { useSessionManager } from '../hooks'
 import type {
   CalendarEvent,
   ViewMode,
@@ -34,14 +36,22 @@ export const CalendarProvider = ({
 }: CalendarProviderProps) => {
   const { t } = useTranslation()
   
+  // Use session manager hook
+  const sessionManager = useSessionManager({
+    autoLoad: false, // We'll manually load based on view mode
+    enableRealtime: true,
+    supabaseClient,
+  })
+  
+  // Store stable references to session manager functions
+  const sessionManagerRef = useRef(sessionManager)
+  sessionManagerRef.current = sessionManager
+  
   // Core state
-  const [events, setEvents] = useState<CalendarEvent[]>([])
   const [playerName, setPlayerName] = useState('')
   const [currentUser, setCurrentUserState] = useState('')
   const [showPlayerModal, setShowPlayerModal] = useState(true)
   const [viewMode, setViewMode] = useState<ViewMode>('all')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   
   // Drag state
   const [isDragging, setIsDragging] = useState(false)
@@ -74,42 +84,6 @@ export const CalendarProvider = ({
   // Constants
   const SESSION_DURATION = 3
   
-  // Load sessions from Supabase
-  const loadSessions = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      
-      let query = supabaseClient.from('sessions').select('*')
-      
-      // Filter by player name if in personal view
-      if (viewMode === 'personal' && playerName) {
-        query = query.eq('player_name', playerName)
-      }
-      
-      const { data, error: fetchError } = await query
-      
-      if (fetchError) throw fetchError
-      
-      // Convert database sessions to calendar events
-      const calendarEvents: CalendarEvent[] = (data || []).map(session => ({
-        id: session.id,
-        day: session.day,
-        startHour: session.start_hour,
-        duration: session.duration,
-        title: session.title,
-        player_name: session.player_name,
-      }))
-      
-      setEvents(calendarEvents)
-    } catch (err) {
-      console.error('Error loading sessions:', err)
-      setError(t('view.error'))
-    } finally {
-      setLoading(false)
-    }
-  }, [viewMode, playerName, t, supabaseClient])
-  
   // Save pending changes to database
   const savePendingChanges = useCallback(async () => {
     // Use ref to get the latest value
@@ -131,43 +105,32 @@ export const CalendarProvider = ({
       clearInterval(countdownIntervalRef.current)
     
     try {
-      // Delete sessions
+      // Delete sessions using session manager
       if (currentPendingChanges.toDelete.length > 0) {
-        for (const id of currentPendingChanges.toDelete) {
-          const { error } = await supabaseClient
-            .from('sessions')
-            .delete()
-            .eq('id', id)
-          if (error) {
-            console.error('Error deleting session:', error)
-          }
-        }
+        await sessionManagerRef.current.deleteSessions(currentPendingChanges.toDelete)
       }
       
-      // Create sessions
+      // Create sessions using session manager
       if (currentPendingChanges.toCreate.length > 0) {
-        const sessionsToInsert = currentPendingChanges.toCreate.map(event => ({
+        const sessionsToCreate = currentPendingChanges.toCreate.map(event => ({
           player_name: event.player_name || playerName,
           day: event.day,
-          start_hour: event.startHour,
+          startHour: event.startHour,
           duration: event.duration,
           title: event.title,
         }))
         
-        const { error } = await supabaseClient
-          .from('sessions')
-          .insert(sessionsToInsert)
-        if (error) {
-          console.error('Error creating sessions:', error)
-          throw error
-        }
+        await sessionManagerRef.current.createSessions(sessionsToCreate)
       }
       
       // Clear pending changes
       setPendingChanges({ toCreate: [], toDelete: [] })
       
       // Reload data from database
-      await loadSessions()
+      const filters = viewMode === 'personal' && playerName 
+        ? { playerName } 
+        : undefined
+      await sessionManagerRef.current.loadSessions(filters)
       
       // Show "Saved" message
       setShowSaved(true)
@@ -179,11 +142,10 @@ export const CalendarProvider = ({
       }, 3000)
     } catch (err) {
       console.error('Error saving changes:', err)
-      setError('Failed to save changes')
     } finally {
       setIsSaving(false)
     }
-  }, [playerName, loadSessions, supabaseClient])
+  }, [playerName, viewMode])
   
   // Schedule a save after 5 seconds
   const scheduleSave = useCallback(() => {
@@ -216,33 +178,12 @@ export const CalendarProvider = ({
   
   // Load sessions on mount and when view mode or player changes
   useEffect(() => {
-    loadSessions()
-  }, [loadSessions])
-  
-  // Set up real-time subscription
-  useEffect(() => {
-    const channel = supabaseClient
-      .channel('sessions-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'sessions',
-        },
-        () => {
-          // Reload sessions when any change occurs (but not if we're in the middle of saving)
-          if (!isSaving) {
-            loadSessions()
-          }
-        }
-      )
-      .subscribe()
+    const filters = viewMode === 'personal' && playerName 
+      ? { playerName } 
+      : undefined
     
-    return () => {
-      supabaseClient.removeChannel(channel)
-    }
-  }, [isSaving, loadSessions, supabaseClient])
+    sessionManagerRef.current.loadSessions(filters)
+  }, [viewMode, playerName])
   
   // Clean up timers on unmount
   useEffect(() => {
@@ -253,6 +194,24 @@ export const CalendarProvider = ({
       if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
     }
   }, [])
+  
+  // Compute displayed events (combine loaded sessions with pending changes for optimistic updates)
+  const displayedEvents = useMemo(() => {
+    // Start with loaded sessions
+    let events = [...sessionManager.sessions]
+    
+    // Remove events that are pending deletion
+    if (pendingChanges.toDelete.length > 0) {
+      events = events.filter(e => !pendingChanges.toDelete.includes(e.id))
+    }
+    
+    // Add events that are pending creation
+    if (pendingChanges.toCreate.length > 0) {
+      events = [...events, ...pendingChanges.toCreate]
+    }
+    
+    return events
+  }, [sessionManager.sessions, pendingChanges])
   
   // Mouse interaction handlers
   const handleMouseDown = useCallback(
@@ -280,6 +239,8 @@ export const CalendarProvider = ({
   
   const handleMouseUp = useCallback(() => {
     if (isDragging && dragStart && dragEnd) {
+      const events = displayedEvents
+      
       // Check if there's a session FOR THE CURRENT PLAYER at the starting position
       const startingEvent = events.find(
         e => e.day === dragStart.day && 
@@ -291,7 +252,6 @@ export const CalendarProvider = ({
       if (dragStart.day === dragEnd.day && dragStart.hour === dragEnd.hour) {
         if (startingEvent) {
           // Delete the existing session FOR THE CURRENT PLAYER - OPTIMISTIC UPDATE
-          setEvents(events.filter(e => e.id !== startingEvent.id))
           setPendingChanges(prev => ({
             ...prev,
             toDelete: [...prev.toDelete, startingEvent.id],
@@ -307,7 +267,6 @@ export const CalendarProvider = ({
             title: t('session.title'),
             player_name: playerName,
           }
-          setEvents([...events, newEvent])
           setPendingChanges(prev => ({
             ...prev,
             toCreate: [...prev.toCreate, newEvent],
@@ -331,7 +290,6 @@ export const CalendarProvider = ({
             return inDayRange && inHourRange && isCurrentPlayer
           })
           
-          setEvents(events.filter(e => !eventsToDelete.includes(e)))
           setPendingChanges(prev => ({
             ...prev,
             toDelete: [...prev.toDelete, ...eventsToDelete.map(e => e.id)],
@@ -358,7 +316,6 @@ export const CalendarProvider = ({
             }
           }
           
-          setEvents([...events, ...newEvents])
           setPendingChanges(prev => ({
             ...prev,
             toCreate: [...prev.toCreate, ...newEvents],
@@ -377,7 +334,7 @@ export const CalendarProvider = ({
     isDragging,
     dragStart,
     dragEnd,
-    events,
+    displayedEvents,
     playerName,
     SESSION_DURATION,
     t,
@@ -395,18 +352,18 @@ export const CalendarProvider = ({
   // Get filtered events based on view mode
   const getFilteredEvents = useCallback(() => {
     return viewMode === 'personal'
-      ? events.filter(e => e.player_name === playerName)
-      : events
-  }, [events, viewMode, playerName])
+      ? displayedEvents.filter(e => e.player_name === playerName)
+      : displayedEvents
+  }, [displayedEvents, viewMode, playerName])
   
   const value: CalendarContextType = {
     // Core state
-    events,
+    events: displayedEvents,
     playerName,
     currentUser,
     viewMode,
-    loading,
-    error,
+    loading: sessionManager.loading,
+    error: sessionManager.error,
     showPlayerModal,
     
     // Drag state
@@ -425,7 +382,6 @@ export const CalendarProvider = ({
     setCurrentUser,
     setViewMode,
     setShowPlayerModal,
-    loadSessions,
     handleMouseDown,
     handleMouseEnter,
     handleMouseUp,

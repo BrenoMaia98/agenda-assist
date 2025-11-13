@@ -1,7 +1,7 @@
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCalendar } from '../../contexts/CalendarContext'
-import { supabase, type Player } from '../../lib/supabase'
+import { usePlayerManager } from '../../hooks'
 import LanguageSwitcher from '../LanguageSwitcher'
 import ThemeToggle from '../ThemeToggle'
 import {
@@ -36,46 +36,11 @@ const WeekCalendar = () => {
     events,
   } = useCalendar()
 
-  // Load players from database
-  const [players, setPlayers] = useState<Player[]>([])
-
-  useEffect(() => {
-    const loadPlayers = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('players')
-          .select('*')
-          .order('name')
-
-        if (error) throw error
-        setPlayers(data || [])
-      } catch (err) {
-        console.error('Error loading players:', err)
-      }
-    }
-
-    loadPlayers()
-
-    // Set up real-time subscription for players
-    const channel = supabase
-      .channel('players-changes-calendar')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'players',
-        },
-        () => {
-          loadPlayers()
-        }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [])
+  // Use player manager hook
+  const { players } = usePlayerManager({
+    autoLoad: true,
+    enableRealtime: true,
+  })
 
   // Generate time slots with 30-minute intervals (0, 0.5, 1, 1.5, ... 23.5)
   const timeSlots = Array.from({ length: 48 }, (_, i) => i * 0.5)

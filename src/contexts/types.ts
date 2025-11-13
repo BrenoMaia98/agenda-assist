@@ -47,7 +47,6 @@ export interface CalendarContextType {
   setCurrentUser: (name: string) => void
   setViewMode: (mode: ViewMode) => void
   setShowPlayerModal: (show: boolean) => void
-  loadSessions: () => Promise<void>
   handleMouseDown: (day: number, hour: number) => void
   handleMouseEnter: (day: number, hour: number) => void
   handleMouseUp: () => void
