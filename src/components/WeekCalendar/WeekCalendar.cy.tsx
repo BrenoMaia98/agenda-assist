@@ -1,11 +1,17 @@
 /// <reference types="cypress" />
-import '../../cypress/support/component'
-import '../i18n/config'
+import '../../../cypress/support/component'
+import '../../i18n/config'
 import WeekCalendar from './WeekCalendar'
+import { TestWrapper, clearMockSessionsData } from '../../test/cypress-helpers'
 
 describe('WeekCalendar Component', () => {
   beforeEach(() => {
-    cy.mount(<WeekCalendar />)
+    clearMockSessionsData()
+    cy.mount(
+      <TestWrapper>
+        <WeekCalendar />
+      </TestWrapper>
+    )
   })
 
   describe('Initial Render', () => {
@@ -70,7 +76,7 @@ describe('WeekCalendar Component', () => {
 
   describe('Single Click - Create Session', () => {
     beforeEach(() => {
-      cy.enterPlayerName('Breno(GM)')
+      cy.enterPlayerName('Breno (GM)')
     })
 
     it('should create a session when clicking empty cell', () => {
@@ -79,6 +85,10 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
+      
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
       cy.contains(/Campanha.*D&D/i).should('be.visible')
       cy.get('.calendar-event').should('have.length.at.least', 1)
     })
@@ -89,6 +99,10 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
+      
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
       cy.get('.event-time').should('contain', '-')
     })
 
@@ -98,6 +112,10 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
+      
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
       cy.get('.cell-overlay').should('exist')
     })
   })
@@ -114,6 +132,9 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
+      
+      // Wait for debounced save to complete
+      cy.wait(5500)
       cy.get('.calendar-event').should('have.length.at.least', 1)
 
       // Delete session
@@ -122,6 +143,9 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
+      
+      // Wait for debounced delete to complete
+      cy.wait(5500)
       cy.get('.calendar-event').should('not.exist')
     })
 
@@ -132,6 +156,7 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
+      cy.wait(5500)
       cy.get('.calendar-event').should('exist')
 
       // Delete
@@ -140,6 +165,7 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
+      cy.wait(5500)
       cy.get('.calendar-event').should('not.exist')
 
       // Create again
@@ -148,6 +174,7 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
+      cy.wait(5500)
       cy.get('.calendar-event').should('exist')
     })
   })
@@ -157,20 +184,30 @@ describe('WeekCalendar Component', () => {
       cy.enterPlayerName('Drefon')
     })
 
-    it.skip('should create multiple sessions when dragging vertically', () => {
-      // Note: Complex drag operations are tested in Vitest/RTL tests
-      // Cypress component testing has limitations with mouseenter event propagation
+    it('should create multiple sessions when dragging vertically', () => {
+      // Drag from cell 0 to cell 2 (3 time slots)
       cy.get('.calendar-cell')
         .eq(0)
         .scrollIntoView()
-        .trigger('mousedown', { buttons: 1 })
-      cy.wait(50)
-      cy.get('.calendar-cell').eq(1).trigger('mouseenter', { buttons: 1 })
-      cy.wait(50)
-      cy.get('.calendar-cell').eq(2).trigger('mouseenter', { buttons: 1 })
-      cy.wait(50)
-      cy.get('.calendar-cell').eq(2).trigger('mouseup')
+        .trigger('mousedown', { which: 1, buttons: 1 })
+        .wait(10)
+      
+      // Trigger mouseenter on intermediate cells
+      cy.get('.calendar-cell')
+        .eq(1)
+        .trigger('mouseenter', { which: 1, buttons: 1 })
+        .wait(10)
+      
+      cy.get('.calendar-cell')
+        .eq(2)
+        .trigger('mouseenter', { which: 1, buttons: 1 })
+        .wait(10)
+        .trigger('mouseup')
 
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
+      // Should create 3 sessions (one for each time slot)
       cy.get('.calendar-event').should('have.length.at.least', 3)
     })
 
@@ -182,42 +219,63 @@ describe('WeekCalendar Component', () => {
       cy.get('.drag-overlay').should('exist')
     })
 
-    it.skip('should create sessions across multiple days', () => {
-      // Note: Complex drag operations are tested in Vitest/RTL tests
-      // Drag from Sunday to Tuesday at same time
+    it('should create sessions across multiple days', () => {
+      // Drag from Sunday (cell 0) to Tuesday (cell 96) at same time
       cy.get('.calendar-cell')
         .eq(0)
         .scrollIntoView()
-        .trigger('mousedown', { buttons: 1 })
-      cy.wait(50)
+        .trigger('mousedown', { which: 1, buttons: 1 })
+        .wait(10)
+      
+      // Next day (Monday at same time)
       cy.get('.calendar-cell')
-        .eq(48) // Next day
-        .trigger('mouseenter', { buttons: 1 })
-      cy.wait(50)
+        .eq(48)
+        .scrollIntoView()
+        .trigger('mouseenter', { which: 1, buttons: 1 })
+        .wait(10)
+      
+      // Third day (Tuesday at same time)
       cy.get('.calendar-cell')
-        .eq(96) // Third day
-        .trigger('mouseenter', { buttons: 1 })
-      cy.wait(50)
-      cy.get('.calendar-cell').eq(96).trigger('mouseup')
+        .eq(96)
+        .scrollIntoView()
+        .trigger('mouseenter', { which: 1, buttons: 1 })
+        .wait(10)
+        .trigger('mouseup')
 
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
+      // Should create 3 sessions (one for each day)
       cy.get('.calendar-event').should('have.length.at.least', 3)
     })
 
-    it.skip('should create sessions with time range when dragging vertically and horizontally', () => {
-      // Note: Complex drag operations are tested in Vitest/RTL tests
+    it('should create sessions with time range when dragging vertically and horizontally', () => {
+      // Drag from cell 0 (Sunday, first slot) through multiple cells
       cy.get('.calendar-cell')
         .eq(0)
         .scrollIntoView()
-        .trigger('mousedown', { buttons: 1 })
-      cy.wait(50)
-      cy.get('.calendar-cell').eq(2).trigger('mouseenter', { buttons: 1 })
-      cy.wait(50)
+        .trigger('mousedown', { which: 1, buttons: 1 })
+        .wait(10)
+      
+      // Drag down 2 slots on same day
       cy.get('.calendar-cell')
-        .eq(50) // Different day, different time
-        .trigger('mouseenter', { buttons: 1 })
-      cy.wait(50)
-      cy.get('.calendar-cell').eq(50).trigger('mouseup')
+        .eq(2)
+        .trigger('mouseenter', { which: 1, buttons: 1 })
+        .wait(10)
+      
+      // Drag to different day (Monday, slot 2)
+      cy.get('.calendar-cell')
+        .eq(50)
+        .scrollIntoView()
+        .trigger('mouseenter', { which: 1, buttons: 1 })
+        .wait(10)
+        .trigger('mouseup')
 
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
+      // Should create sessions spanning the dragged range
+      // (3 time slots * 2 days = 6 sessions)
       cy.get('.calendar-event').should('have.length.at.least', 6)
     })
   })
@@ -227,71 +285,101 @@ describe('WeekCalendar Component', () => {
       cy.enterPlayerName('Frizon')
     })
 
-    it.skip('should delete multiple sessions when dragging from existing session', () => {
-      // Note: Complex drag operations are tested in Vitest/RTL tests
-      // Create multiple sessions
+    it('should delete multiple sessions when dragging from existing session', () => {
+      // First, create multiple sessions by dragging
       cy.get('.calendar-cell')
         .eq(0)
         .scrollIntoView()
-        .trigger('mousedown', { buttons: 1 })
-      cy.wait(50)
-      cy.get('.calendar-cell').eq(3).trigger('mouseenter', { buttons: 1 })
-      cy.wait(50)
-      cy.get('.calendar-cell').eq(3).trigger('mouseup')
+        .trigger('mousedown', { which: 1, buttons: 1 })
+        .wait(10)
+      
+      cy.get('.calendar-cell')
+        .eq(3)
+        .trigger('mouseenter', { which: 1, buttons: 1 })
+        .wait(10)
+        .trigger('mouseup')
 
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
+      // Verify sessions were created
       cy.get('.calendar-event').should('have.length.at.least', 4)
 
-      // Delete by dragging from existing
-      cy.wait(100)
+      // Now delete by dragging from existing session
+      cy.wait(150)
       cy.get('.calendar-cell')
         .eq(0)
         .scrollIntoView()
-        .trigger('mousedown', { buttons: 1 })
-      cy.wait(50)
-      cy.get('.calendar-cell').eq(2).trigger('mouseenter', { buttons: 1 })
-      cy.wait(50)
-      cy.get('.calendar-cell').eq(2).trigger('mouseup')
+        .trigger('mousedown', { which: 1, buttons: 1 })
+        .wait(10)
+      
+      cy.get('.calendar-cell')
+        .eq(2)
+        .trigger('mouseenter', { which: 1, buttons: 1 })
+        .wait(10)
+        .trigger('mouseup')
 
+      // Wait for debounced delete to complete
+      cy.wait(5500)
+      
+      // Should have deleted some sessions
       cy.get('.calendar-event').should('have.length.lessThan', 4)
     })
 
-    it.skip('should delete all sessions in dragged range', () => {
-      // Note: Complex drag operations are tested in Vitest/RTL tests
-      // Create sessions
+    it('should delete all sessions in dragged range', () => {
+      // Create 4 individual sessions with single clicks
       cy.get('.calendar-cell')
         .eq(0)
         .scrollIntoView()
-        .trigger('mousedown')
+        .trigger('mousedown', { which: 1 })
         .trigger('mouseup')
+        .wait(50)
+      
       cy.get('.calendar-cell')
         .eq(1)
         .scrollIntoView()
-        .trigger('mousedown')
+        .trigger('mousedown', { which: 1 })
         .trigger('mouseup')
+        .wait(50)
+      
       cy.get('.calendar-cell')
         .eq(2)
         .scrollIntoView()
-        .trigger('mousedown')
+        .trigger('mousedown', { which: 1 })
         .trigger('mouseup')
+        .wait(50)
+      
       cy.get('.calendar-cell')
         .eq(3)
         .scrollIntoView()
-        .trigger('mousedown')
+        .trigger('mousedown', { which: 1 })
         .trigger('mouseup')
+        .wait(50)
 
+      // Wait for all creates to be saved
+      cy.wait(5500)
+      
+      // Verify 4 sessions were created
       cy.get('.calendar-event').should('have.length', 4)
 
-      // Delete range
-      cy.wait(100)
+      // Delete the middle range (cells 1-2) by dragging
+      cy.wait(150)
       cy.get('.calendar-cell')
         .eq(1)
         .scrollIntoView()
-        .trigger('mousedown', { buttons: 1 })
-      cy.wait(50)
-      cy.get('.calendar-cell').eq(2).trigger('mouseenter', { buttons: 1 })
-      cy.wait(50)
-      cy.get('.calendar-cell').eq(2).trigger('mouseup')
+        .trigger('mousedown', { which: 1, buttons: 1 })
+        .wait(10)
+      
+      cy.get('.calendar-cell')
+        .eq(2)
+        .trigger('mouseenter', { which: 1, buttons: 1 })
+        .wait(10)
+        .trigger('mouseup')
 
+      // Wait for delete to be saved
+      cy.wait(5500)
+      
+      // Should have 2 sessions left (cells 0 and 3)
       cy.get('.calendar-event').should('have.length', 2)
     })
   })
@@ -316,6 +404,9 @@ describe('WeekCalendar Component', () => {
       cy.get('.calendar-cell').eq(1).trigger('mouseenter')
       cy.get('body').trigger('mouseup')
 
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
       cy.get('.calendar-event').should('have.length.at.least', 1)
     })
   })
@@ -331,6 +422,10 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
+      
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
       cy.get('.player-name').should('contain', 'Campanha')
     })
 
@@ -340,6 +435,10 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
+      
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
       cy.get('.event-time').should('be.visible')
     })
 
@@ -349,6 +448,10 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
+      
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
       cy.get('.calendar-event')
         .trigger('mouseenter')
         .should('have.css', 'transform')
@@ -402,7 +505,10 @@ describe('WeekCalendar Component', () => {
         .trigger('mousedown')
         .trigger('mouseup')
 
-      // Should toggle properly
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
+      // Should toggle properly (odd number of clicks = session exists)
       cy.get('.calendar-event').should('exist')
     })
 
@@ -413,6 +519,9 @@ describe('WeekCalendar Component', () => {
         .trigger('mousedown')
         .trigger('mouseup')
 
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
       cy.get('.calendar-event').should('exist')
     })
 
@@ -423,13 +532,16 @@ describe('WeekCalendar Component', () => {
         .trigger('mousedown')
         .trigger('mouseup')
 
+      // Wait for debounced save to complete
+      cy.wait(5500)
+      
       cy.get('.calendar-event').should('exist')
     })
   })
 
   describe('Debounced Save with Countdown Timer', () => {
     beforeEach(() => {
-      cy.enterPlayerName('Breno(GM)')
+      cy.enterPlayerName('Breno (GM)')
     })
 
     it('should show countdown indicator after creating a session', () => {

@@ -17,6 +17,8 @@ declare global {
 }
 
 Cypress.Commands.add('enterPlayerName', (name: string) => {
+  // Wait for players to load
+  cy.get('select#player-name option', { timeout: 10000 }).should('have.length.at.least', 2)
   cy.get('select#player-name').select(name)
   cy.contains(/selecione seu jogador/i).should('not.exist')
   cy.wait(100) // Small wait to ensure state updates
