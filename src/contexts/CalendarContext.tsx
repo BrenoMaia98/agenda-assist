@@ -280,15 +280,17 @@ export const CalendarProvider = ({
   
   const handleMouseUp = useCallback(() => {
     if (isDragging && dragStart && dragEnd) {
-      // Check if there's a session at the starting position
+      // Check if there's a session FOR THE CURRENT PLAYER at the starting position
       const startingEvent = events.find(
-        e => e.day === dragStart.day && e.startHour === dragStart.hour
+        e => e.day === dragStart.day && 
+             e.startHour === dragStart.hour && 
+             e.player_name === playerName
       )
       
       // Check if clicking on the same cell (not dragging)
       if (dragStart.day === dragEnd.day && dragStart.hour === dragEnd.hour) {
         if (startingEvent) {
-          // Delete the existing session - OPTIMISTIC UPDATE
+          // Delete the existing session FOR THE CURRENT PLAYER - OPTIMISTIC UPDATE
           setEvents(events.filter(e => e.id !== startingEvent.id))
           setPendingChanges(prev => ({
             ...prev,
@@ -296,7 +298,7 @@ export const CalendarProvider = ({
             toCreate: prev.toCreate.filter(e => e.id !== startingEvent.id),
           }))
         } else {
-          // Create a new session - OPTIMISTIC UPDATE
+          // Create a new session FOR THE CURRENT PLAYER - OPTIMISTIC UPDATE
           const newEvent: CalendarEvent = {
             id: `temp-${Date.now()}-${dragStart.day}-${dragStart.hour}`,
             day: dragStart.day,
@@ -320,11 +322,13 @@ export const CalendarProvider = ({
         
         if (startingEvent) {
           // Started on existing session: DELETE mode - OPTIMISTIC UPDATE
+          // Only delete sessions that belong to the current player
           const eventsToDelete = events.filter(e => {
             const inDayRange = e.day >= startDay && e.day <= endDay
             const inHourRange =
               e.startHour >= startHour && e.startHour <= endHour
-            return inDayRange && inHourRange
+            const isCurrentPlayer = e.player_name === playerName
+            return inDayRange && inHourRange && isCurrentPlayer
           })
           
           setEvents(events.filter(e => !eventsToDelete.includes(e)))
