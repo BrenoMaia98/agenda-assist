@@ -4,6 +4,12 @@ import { useCalendar } from '../../contexts/CalendarContext'
 import { supabase, type Player } from '../../lib/supabase'
 import LanguageSwitcher from '../LanguageSwitcher'
 import ThemeToggle from '../ThemeToggle'
+import {
+  formatTime,
+  getPlayersAtTimeSlot,
+  getPlayersStartingAt,
+  getSessionsStartingAt,
+} from './utils'
 import './WeekCalendar.css'
 
 const WeekCalendar = () => {
@@ -84,70 +90,6 @@ const WeekCalendar = () => {
     t('days.friday'),
     t('days.saturday'),
   ]
-
-  const formatTime = (hour: number) => {
-    const fullHour = Math.floor(hour)
-    const minutes = (hour % 1) * 60
-    const period = fullHour >= 12 ? 'PM' : 'AM'
-    const displayHour =
-      fullHour === 0 ? 12 : fullHour > 12 ? fullHour - 12 : fullHour
-    return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`
-  }
-
-  // Helper function to get all players available at a specific time slot
-  const getPlayersAtTimeSlot = (day: number, hour: number) => {
-    const playersAvailable = new Set<string>()
-
-    // Check all events (not filtered) to see which players are available
-    events.forEach(event => {
-      // Check if this event covers this time slot
-      if (
-        event.day === day &&
-        hour >= event.startHour &&
-        hour < event.startHour + event.duration
-      ) {
-        if (event.player_name) {
-          playersAvailable.add(event.player_name)
-        }
-      }
-    })
-
-    return Array.from(playersAvailable)
-  }
-
-  // Helper function to get players whose sessions START at a specific time slot
-  const getPlayersStartingAt = (day: number, hour: number) => {
-    const playersStarting = new Set<string>()
-
-    events.forEach(event => {
-      if (event.day === day && event.startHour === hour && event.player_name) {
-        playersStarting.add(event.player_name)
-      }
-    })
-
-    return Array.from(playersStarting)
-  }
-
-  // Helper function to get session info (player name with start/end time)
-  const getSessionsStartingAt = (day: number, hour: number) => {
-    const sessions: Array<{
-      playerName: string
-      startHour: number
-      endHour: number
-    }> = []
-
-    events.forEach(event => {
-      if (event.day === day && event.startHour === hour && event.player_name) {
-        sessions.push({
-          playerName: event.player_name,
-          startHour: event.startHour,
-          endHour: event.startHour + event.duration,
-        })
-      }
-    })
-
-    return sessions
-  }
 
   return (
     <div
@@ -400,7 +342,7 @@ const WeekCalendar = () => {
                 {/* Day cells */}
                 {daysOfWeek.map((_, dayIndex) => {
                   // Get all players available at this time slot (for highlighting)
-                  const playersAtSlot = getPlayersAtTimeSlot(dayIndex, timeSlot)
+                  const playersAtSlot = getPlayersAtTimeSlot(dayIndex, timeSlot, events)
                   const hasPlayers = playersAtSlot.length > 0
 
                   // Cell should be green if all players are available (even if overlapping)
@@ -410,11 +352,13 @@ const WeekCalendar = () => {
                   // Get players whose sessions START at this time slot (for display)
                   const playersStarting = getPlayersStartingAt(
                     dayIndex,
-                    timeSlot
+                    timeSlot,
+                    events
                   )
                   const sessionsStarting = getSessionsStartingAt(
                     dayIndex,
-                    timeSlot
+                    timeSlot,
+                    events
                   )
                   const hasStartingSessions = playersStarting.length > 0
 

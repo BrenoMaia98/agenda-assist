@@ -142,7 +142,13 @@ describe('CalendarContext - Basic Functionality', () => {
 
       act(() => {
         result.current.setPlayerName('ValidPlayer')
+      })
+
+      act(() => {
         result.current.handleMouseDown(0, 10)
+      })
+
+      act(() => {
         result.current.handleMouseEnter(0, 11)
       })
 
@@ -174,7 +180,21 @@ describe('CalendarContext - Basic Functionality', () => {
 
       act(() => {
         result.current.setPlayerName('TestPlayer')
+      })
+
+      // Verify playerName is set
+      expect(result.current.playerName).toBe('TestPlayer')
+
+      act(() => {
         result.current.handleMouseDown(0, 10)
+      })
+
+      // Verify drag state is set
+      expect(result.current.isDragging).toBe(true)
+      expect(result.current.dragStart).toEqual({ day: 0, hour: 10 })
+      expect(result.current.dragEnd).toEqual({ day: 0, hour: 10 })
+
+      act(() => {
         result.current.handleMouseUp()
       })
 
@@ -194,7 +214,13 @@ describe('CalendarContext - Basic Functionality', () => {
 
       act(() => {
         result.current.setPlayerName('TestPlayer')
+      })
+
+      act(() => {
         result.current.handleMouseDown(0, 10)
+      })
+
+      act(() => {
         result.current.handleMouseUp()
       })
 
@@ -208,9 +234,21 @@ describe('CalendarContext - Basic Functionality', () => {
 
       act(() => {
         result.current.setPlayerName('TestPlayer')
+      })
+
+      act(() => {
         result.current.handleMouseDown(0, 10)
+      })
+
+      act(() => {
         result.current.handleMouseEnter(0, 10.5)
+      })
+
+      act(() => {
         result.current.handleMouseEnter(0, 11)
+      })
+
+      act(() => {
         result.current.handleMouseUp()
       })
 
@@ -224,18 +262,43 @@ describe('CalendarContext - Basic Functionality', () => {
         wrapper: createWrapper(),
       })
 
+      // Ensure we're in "all" view mode
+      act(() => {
+        result.current.setViewMode('all')
+      })
+
+      // Create first event
       act(() => {
         result.current.setPlayerName('Player1')
+      })
+
+      act(() => {
         result.current.handleMouseDown(0, 10)
-        result.current.handleMouseUp()
-        
-        result.current.setPlayerName('Player2')
-        result.current.handleMouseDown(1, 10)
+      })
+
+      act(() => {
         result.current.handleMouseUp()
       })
 
+      expect(result.current.events).toHaveLength(1)
+      
+      // Create second event with different player
+      act(() => {
+        result.current.setPlayerName('Player2')
+      })
+
+      act(() => {
+        result.current.handleMouseDown(1, 10)
+      })
+
+      act(() => {
+        result.current.handleMouseUp()
+      })
+
+      expect(result.current.events).toHaveLength(2)
+
       const filtered = result.current.getFilteredEvents()
-      expect(filtered.length).toBeGreaterThanOrEqual(2)
+      expect(filtered.length).toBe(2)
     })
 
     it('should filter by player in personal mode', () => {
@@ -243,20 +306,47 @@ describe('CalendarContext - Basic Functionality', () => {
         wrapper: createWrapper(),
       })
 
+      // Create first event for Player1
       act(() => {
         result.current.setPlayerName('Player1')
+      })
+
+      act(() => {
         result.current.handleMouseDown(0, 10)
+      })
+
+      act(() => {
         result.current.handleMouseUp()
-        
+      })
+
+      expect(result.current.events).toHaveLength(1)
+      
+      // Create second event for Player2
+      act(() => {
         result.current.setPlayerName('Player2')
+      })
+
+      act(() => {
         result.current.handleMouseDown(1, 10)
+      })
+
+      act(() => {
         result.current.handleMouseUp()
-        
+      })
+
+      expect(result.current.events).toHaveLength(2)
+      
+      // Switch to personal mode for Player1
+      act(() => {
         result.current.setPlayerName('Player1')
+      })
+
+      act(() => {
         result.current.setViewMode('personal')
       })
 
       const filtered = result.current.getFilteredEvents()
+      expect(filtered).toHaveLength(1)
       expect(filtered.every(e => e.player_name === 'Player1')).toBe(true)
     })
   })
