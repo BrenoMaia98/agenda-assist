@@ -30,18 +30,19 @@ export interface CalendarContextType {
   loading: boolean
   error: string | null
   showPlayerModal: boolean
-  
+  supabaseClient: any
+
   // Drag state
   isDragging: boolean
   dragStart: { day: number; hour: number } | null
   dragEnd: { day: number; hour: number } | null
-  
+
   // Debounced save state
   pendingChanges: PendingChanges
   saveCountdown: number | null
   isSaving: boolean
   showSaved: boolean
-  
+
   // Actions
   setPlayerName: (name: string) => void
   setCurrentUser: (name: string) => void
@@ -51,7 +52,7 @@ export interface CalendarContextType {
   handleMouseEnter: (day: number, hour: number) => void
   handleMouseUp: () => void
   getFilteredEvents: () => CalendarEvent[]
-  
+
   // Constants
   SESSION_DURATION: number
 }

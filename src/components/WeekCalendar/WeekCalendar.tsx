@@ -34,12 +34,14 @@ const WeekCalendar = () => {
     handleMouseEnter,
     handleMouseUp,
     events,
+    supabaseClient,
   } = useCalendar()
 
   // Use player manager hook
   const { players } = usePlayerManager({
     autoLoad: true,
     enableRealtime: true,
+    supabaseClient: supabaseClient,
   })
 
   // Generate time slots with 30-minute intervals (0, 0.5, 1, 1.5, ... 23.5)
@@ -222,9 +224,9 @@ const WeekCalendar = () => {
               left: '1rem',
               background: showSaved
                 ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                : 'linear-gradient(135deg, var(--primary-color) 0%, var(--color-primary) 100%)',
+                : 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)',
               border: '2px solid',
-              borderColor: showSaved ? '#059669' : 'var(--primary-color)',
+              borderColor: showSaved ? '#059669' : 'var(--color-primary-hover)',
               borderRadius: '8px',
               padding: '0.75rem 1rem',
               display: 'flex',
@@ -234,7 +236,7 @@ const WeekCalendar = () => {
               zIndex: 9999,
               fontSize: '0.875rem',
               fontWeight: '600',
-              color: 'white',
+              color: '#ffffff',
               transition: 'all 0.3s ease',
             }}
           >
@@ -249,7 +251,7 @@ const WeekCalendar = () => {
               >
                 <path
                   d="M13.5 4L6 11.5L2.5 8"
-                  stroke="white"
+                  stroke="#ffffff"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -261,7 +263,7 @@ const WeekCalendar = () => {
                 style={{
                   width: '16px',
                   height: '16px',
-                  border: '2px solid white',
+                  border: '2px solid #ffffff',
                   borderTopColor: 'transparent',
                   borderRadius: '50%',
                   animation: 'spin 1s linear infinite',
@@ -307,7 +309,11 @@ const WeekCalendar = () => {
                 {/* Day cells */}
                 {daysOfWeek.map((_, dayIndex) => {
                   // Get all players available at this time slot (for highlighting)
-                  const playersAtSlot = getPlayersAtTimeSlot(dayIndex, timeSlot, events)
+                  const playersAtSlot = getPlayersAtTimeSlot(
+                    dayIndex,
+                    timeSlot,
+                    events
+                  )
                   const hasPlayers = playersAtSlot.length > 0
 
                   // Cell should be green if all players are available (even if overlapping)
