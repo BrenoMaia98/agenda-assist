@@ -356,7 +356,9 @@ describe('useDebouncedSave', () => {
   })
 
   it('should handle save errors gracefully', async () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
     const error = new Error('Save failed')
     const onSave = vi.fn().mockRejectedValue(error)
 
@@ -525,4 +527,3 @@ describe('useDebouncedSave', () => {
     expect(result.current.showSaved).toBe(false)
   })
 })
-

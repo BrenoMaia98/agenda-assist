@@ -26,4 +26,3 @@ export interface Player {
   is_gm: boolean
   created_at: string
 }
-

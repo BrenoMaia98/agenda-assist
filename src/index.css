@@ -78,20 +78,20 @@ button:focus-visible {
 }
 
 /* Manual theme overrides */
-[data-theme="light"] {
+[data-theme='light'] {
   color: var(--text-light-primary);
   background-color: var(--bg-light-primary);
 }
 
-[data-theme="light"] button {
+[data-theme='light'] button {
   background-color: var(--bg-light-tertiary);
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   color: var(--text-dark-primary);
   background-color: var(--bg-dark-secondary);
 }
 
-[data-theme="dark"] button {
+[data-theme='dark'] button {
   background-color: var(--bg-dark-primary);
 }

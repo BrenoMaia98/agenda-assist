@@ -33,6 +33,9 @@
   /* Gradient Colors */
   --gradient-purple-start: #667eea;
   --gradient-purple-end: #764ba2;
+  --gradient-green-start: #10b981;
+  --gradient-green-end: #059669;
+  --gradient-green-border: #047857;
 
   /* Overlay Colors */
   --overlay-dark: rgba(26, 26, 26, 0.9);
@@ -74,6 +77,11 @@
     --text-light-primary: #213547;
     --text-light-secondary: #333;
     --text-light-tertiary: #666;
+
+    /* Gradient Colors - Light Mode */
+    --gradient-green-start: #34d399;
+    --gradient-green-end: #10b981;
+    --gradient-green-border: #059669;
 
     /* Overlay Colors - Light Mode */
     --overlay-blue-light: rgba(66, 133, 244, 0.15);
@@ -132,6 +140,11 @@
   --text-light-primary: #213547;
   --text-light-secondary: #333;
   --text-light-tertiary: #666;
+
+  /* Gradient Colors - Light Mode Override */
+  --gradient-green-start: #34d399;
+  --gradient-green-end: #10b981;
+  --gradient-green-border: #059669;
 
   --overlay-blue-light: rgba(66, 133, 244, 0.15);
   --overlay-blue-medium: rgba(66, 133, 244, 0.2);

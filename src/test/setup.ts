@@ -83,4 +83,3 @@ beforeEach(() => {
 afterEach(() => {
   console.error = originalConsoleError
 })
-

@@ -46,29 +46,28 @@
 }
 
 /* Override for manual theme selection */
-[data-theme="light"] .theme-toggle {
+[data-theme='light'] .theme-toggle {
   background-color: var(--bg-light-secondary);
   border-color: var(--border-light-tertiary);
 }
 
-[data-theme="light"] .theme-button:hover {
+[data-theme='light'] .theme-button:hover {
   background-color: var(--bg-light-button-hover);
 }
 
-[data-theme="light"] .theme-button.active {
+[data-theme='light'] .theme-button.active {
   background-color: var(--color-primary);
 }
 
-[data-theme="dark"] .theme-toggle {
+[data-theme='dark'] .theme-toggle {
   background-color: var(--bg-dark-tertiary);
   border-color: var(--border-dark-secondary);
 }
 
-[data-theme="dark"] .theme-button:hover {
+[data-theme='dark'] .theme-button:hover {
   background-color: var(--bg-dark-button-hover);
 }
 
-[data-theme="dark"] .theme-button.active {
+[data-theme='dark'] .theme-button.active {
   background-color: var(--color-primary);
 }
-

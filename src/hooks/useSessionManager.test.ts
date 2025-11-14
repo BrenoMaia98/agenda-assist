@@ -115,7 +115,9 @@ describe('useSessionManager', () => {
     ]
 
     const mockQuery = {
-      eq: vi.fn(() => Promise.resolve({ data: [mockSessions[0]], error: null })),
+      eq: vi.fn(() =>
+        Promise.resolve({ data: [mockSessions[0]], error: null })
+      ),
     }
 
     mockSupabaseClient.from = vi.fn(() => ({
@@ -227,5 +229,3 @@ describe('useSessionManager', () => {
     expect(uniquePlayers).toContain('Player 2')
   })
 })
-
-

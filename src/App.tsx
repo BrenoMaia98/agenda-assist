@@ -9,7 +9,10 @@ function AppContent() {
   return (
     <>
       {showPlayerModal && (
-        <PlayerSelectionModal onPlayerSelect={setCurrentUser} currentUser={currentUser} />
+        <PlayerSelectionModal
+          onPlayerSelect={setCurrentUser}
+          currentUser={currentUser}
+        />
       )}
       <div className="app">
         <WeekCalendar />

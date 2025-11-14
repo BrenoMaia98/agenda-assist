@@ -176,4 +176,3 @@ describe('i18n Configuration', () => {
     })
   })
 })
-

@@ -316,9 +316,10 @@ const WeekCalendar = () => {
                   )
                   const hasPlayers = playersAtSlot.length > 0
 
-                  // Cell should be green if all players are available (even if overlapping)
+                  // Cell should be green if all players have overlapping availability
                   const allPlayersAvailable =
-                    playersAtSlot.length === players.length
+                    playersAtSlot.length === players.length &&
+                    players.length > 0
 
                   // Get players whose sessions START at this time slot (for display)
                   const playersStarting = getPlayersStartingAt(
@@ -380,16 +381,25 @@ const WeekCalendar = () => {
                       {/* Drag preview overlay */}
                       {isInDragSelection && <div className="drag-overlay" />}
 
+                      {/* Overlay for cells covered by sessions (but not starting points) */}
+                      {/* Don't apply overlay to green cells where all players agreed */}
+                      {hasPlayers &&
+                        !hasStartingSessions &&
+                        shouldShowCell &&
+                        !allPlayersAvailable && (
+                          <div className="cell-overlay" />
+                        )}
+
                       {/* Show player names ONLY at session starting points */}
                       {hasStartingSessions && shouldShowCell && (
                         <div
-                          className={`availability-indicator ${showAllPlayersMessage ? 'all-available' : ''}`}
+                          className={`calendar-event availability-indicator ${showAllPlayersMessage ? 'all-available' : ''}`}
                         >
                           {showAllPlayersMessage ? (
                             // When all players agreed, show time range and badge
                             <>
                               <div
-                                className="session-time-display"
+                                className="event-time session-time-display"
                                 style={{ marginBottom: '0.25rem' }}
                               >
                                 {formatTime(sessionsStarting[0].startHour)}-
@@ -403,13 +413,13 @@ const WeekCalendar = () => {
                             // Otherwise, show time range once and player names joined by commas
                             <div className="players-list">
                               <div
-                                className="session-time-display"
+                                className="event-time session-time-display"
                                 style={{ marginBottom: '0.25rem' }}
                               >
                                 {formatTime(sessionsStarting[0].startHour)}-
                                 {formatTime(sessionsStarting[0].endHour)}
                               </div>
-                              <div className="player-name-display">
+                              <div className="player-name player-name-display">
                                 {sessionsStarting
                                   .map(s => s.playerName)
                                   .join(', ')}

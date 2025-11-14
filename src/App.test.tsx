@@ -101,9 +101,11 @@ describe('App', () => {
 
       // Use getAllByRole and filter by the one in the modal
       const selects = screen.getAllByRole('combobox')
-      const playerSelect = selects.find(s => s.classList.contains('modal-select'))
+      const playerSelect = selects.find(s =>
+        s.classList.contains('modal-select')
+      )
       expect(playerSelect).toBeDefined()
-      
+
       await userEvent.selectOptions(playerSelect!, 'TestPlayer')
 
       const confirmButton = screen.getByRole('button', { name: /confirmar/i })
@@ -123,9 +125,11 @@ describe('App', () => {
       })
 
       const selects = screen.getAllByRole('combobox')
-      const playerSelect = selects.find(s => s.classList.contains('modal-select'))
+      const playerSelect = selects.find(s =>
+        s.classList.contains('modal-select')
+      )
       expect(playerSelect).toBeDefined()
-      
+
       await userEvent.selectOptions(playerSelect!, 'TestPlayer')
 
       const confirmButton = screen.getByRole('button', { name: /confirmar/i })
@@ -157,9 +161,11 @@ describe('App', () => {
       })
 
       const selects = screen.getAllByRole('combobox')
-      const modalSelect = selects.find(s => s.classList.contains('modal-select'))
+      const modalSelect = selects.find(s =>
+        s.classList.contains('modal-select')
+      )
       expect(modalSelect).toBeDefined()
-      
+
       await userEvent.selectOptions(modalSelect!, 'TestPlayer')
 
       const confirmButton = screen.getByRole('button', { name: /confirmar/i })
@@ -206,9 +212,11 @@ describe('App', () => {
       })
 
       const selects = screen.getAllByRole('combobox')
-      const playerSelect = selects.find(s => s.classList.contains('modal-select'))
+      const playerSelect = selects.find(s =>
+        s.classList.contains('modal-select')
+      )
       expect(playerSelect).toBeDefined()
-      
+
       await userEvent.selectOptions(playerSelect!, 'TestPlayer')
 
       const confirmButton = screen.getByRole('button', { name: /confirmar/i })
@@ -297,11 +305,13 @@ describe('App', () => {
         // Theme toggle buttons should be present
         const buttons = screen.getAllByRole('button')
         const themeButtons = buttons.filter(
-          btn => btn.textContent === '☀️' || btn.textContent === '🌙' || btn.textContent === '💻'
+          btn =>
+            btn.textContent === '☀️' ||
+            btn.textContent === '🌙' ||
+            btn.textContent === '💻'
         )
         expect(themeButtons.length).toBeGreaterThan(0)
       })
     })
   })
 })
-

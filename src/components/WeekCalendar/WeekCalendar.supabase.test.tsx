@@ -19,9 +19,7 @@ vi.mock('../../lib/supabase', () => import('../../lib/__mocks__/supabase'))
 
 const renderWithProvider = (ui: ReactElement) => {
   return render(
-    <CalendarProvider supabaseClient={supabase as any}>
-      {ui}
-    </CalendarProvider>
+    <CalendarProvider supabaseClient={supabase as any}>{ui}</CalendarProvider>
   )
 }
 
@@ -67,7 +65,9 @@ describe.skip('WeekCalendar - Supabase Integration', () => {
       renderWithProvider(<WeekCalendar />)
 
       await waitFor(() => {
-        expect(screen.getByText(/falha ao carregar sessões/i)).toBeInTheDocument()
+        expect(
+          screen.getByText(/falha ao carregar sessões/i)
+        ).toBeInTheDocument()
       })
     })
   })
@@ -125,7 +125,9 @@ describe.skip('WeekCalendar - Supabase Integration', () => {
 
       // Should trigger another database query
       await waitFor(() => {
-        expect((supabase.from as any).mock.calls.length).toBeGreaterThan(initialCalls)
+        expect((supabase.from as any).mock.calls.length).toBeGreaterThan(
+          initialCalls
+        )
       })
     })
   })
@@ -143,7 +145,9 @@ describe.skip('WeekCalendar - Supabase Integration', () => {
     it('should show countdown indicator after creating session', async () => {
       renderWithProvider(<WeekCalendar />)
 
-      const select = screen.getByRole('combobox', { name: /selecione o jogador/i })
+      const select = screen.getByRole('combobox', {
+        name: /selecione o jogador/i,
+      })
       await userEvent.selectOptions(select, 'Yshi')
 
       const cells = screen
@@ -161,7 +165,9 @@ describe.skip('WeekCalendar - Supabase Integration', () => {
     it('should update countdown as time passes', async () => {
       renderWithProvider(<WeekCalendar />)
 
-      const select = screen.getByRole('combobox', { name: /selecione o jogador/i })
+      const select = screen.getByRole('combobox', {
+        name: /selecione o jogador/i,
+      })
       await userEvent.selectOptions(select, 'Yshi')
 
       const cells = screen
@@ -183,9 +189,12 @@ describe.skip('WeekCalendar - Supabase Integration', () => {
       })
 
       // Should now show 4
-      await waitFor(() => {
-        expect(screen.getByText(/salvando em 4s/i)).toBeInTheDocument()
-      }, { timeout: 3000 })
+      await waitFor(
+        () => {
+          expect(screen.getByText(/salvando em 4s/i)).toBeInTheDocument()
+        },
+        { timeout: 3000 }
+      )
     }, 10000)
   })
 
@@ -195,10 +204,14 @@ describe.skip('WeekCalendar - Supabase Integration', () => {
 
       // Wait for loading to complete
       await waitFor(() => {
-        expect(screen.queryByText(/carregando sessões/i)).not.toBeInTheDocument()
+        expect(
+          screen.queryByText(/carregando sessões/i)
+        ).not.toBeInTheDocument()
       })
 
-      const select = screen.getByRole('combobox', { name: /selecione o jogador/i })
+      const select = screen.getByRole('combobox', {
+        name: /selecione o jogador/i,
+      })
       await userEvent.selectOptions(select, 'Yshi')
 
       const cells = screen
@@ -219,10 +232,14 @@ describe.skip('WeekCalendar - Supabase Integration', () => {
 
       // Wait for loading to complete
       await waitFor(() => {
-        expect(screen.queryByText(/carregando sessões/i)).not.toBeInTheDocument()
+        expect(
+          screen.queryByText(/carregando sessões/i)
+        ).not.toBeInTheDocument()
       })
 
-      const select = screen.getByRole('combobox', { name: /selecione o jogador/i })
+      const select = screen.getByRole('combobox', {
+        name: /selecione o jogador/i,
+      })
       await userEvent.selectOptions(select, 'Yshi')
 
       const cells = screen
@@ -268,17 +285,22 @@ describe.skip('WeekCalendar - Supabase Integration', () => {
 
       // Wait for loading to complete
       await waitFor(() => {
-        expect(screen.queryByText(/carregando sessões/i)).not.toBeInTheDocument()
+        expect(
+          screen.queryByText(/carregando sessões/i)
+        ).not.toBeInTheDocument()
       })
 
-      const select = screen.getByRole('combobox', { name: /selecione o jogador/i })
+      const select = screen.getByRole('combobox', {
+        name: /selecione o jogador/i,
+      })
       await userEvent.selectOptions(select, 'Yshi')
 
       const cells = screen
         .getAllByRole('generic')
         .filter(el => el.className.includes('calendar-cell'))
 
-      const initialInsertCalls = (supabase.from('sessions').insert as any).mock.calls.length
+      const initialInsertCalls = (supabase.from('sessions').insert as any).mock
+        .calls.length
 
       fireEvent.mouseDown(cells[0])
       fireEvent.mouseUp(cells[0])
@@ -289,7 +311,9 @@ describe.skip('WeekCalendar - Supabase Integration', () => {
       })
 
       // Insert should not be called immediately (countdown is active)
-      expect((supabase.from('sessions').insert as any).mock.calls.length).toBe(initialInsertCalls)
+      expect((supabase.from('sessions').insert as any).mock.calls.length).toBe(
+        initialInsertCalls
+      )
     })
   })
 })

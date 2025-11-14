@@ -74,9 +74,7 @@ describe('usePlayerManager', () => {
 
     mockSupabaseClient.from = vi.fn(() => ({
       select: vi.fn(() => ({
-        order: vi.fn(() =>
-          Promise.resolve({ data: mockPlayers, error: null })
-        ),
+        order: vi.fn(() => Promise.resolve({ data: mockPlayers, error: null })),
       })),
     }))
 
@@ -220,5 +218,3 @@ describe('usePlayerManager', () => {
     expect(notFound).toBeUndefined()
   })
 })
-
-

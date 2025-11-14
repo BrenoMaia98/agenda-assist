@@ -85,10 +85,10 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
-      
+
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       cy.contains(/Campanha.*D&D/i).should('be.visible')
       cy.get('.calendar-event').should('have.length.at.least', 1)
     })
@@ -99,10 +99,10 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
-      
+
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       cy.get('.event-time').should('contain', '-')
     })
 
@@ -112,10 +112,10 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
-      
+
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       cy.get('.cell-overlay').should('exist')
     })
   })
@@ -132,7 +132,7 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
-      
+
       // Wait for debounced save to complete
       cy.wait(5500)
       cy.get('.calendar-event').should('have.length.at.least', 1)
@@ -143,7 +143,7 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
-      
+
       // Wait for debounced delete to complete
       cy.wait(5500)
       cy.get('.calendar-event').should('not.exist')
@@ -191,13 +191,13 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown', { which: 1, buttons: 1 })
         .wait(10)
-      
+
       // Trigger mouseenter on intermediate cells
       cy.get('.calendar-cell')
         .eq(1)
         .trigger('mouseenter', { which: 1, buttons: 1 })
         .wait(10)
-      
+
       cy.get('.calendar-cell')
         .eq(2)
         .trigger('mouseenter', { which: 1, buttons: 1 })
@@ -206,7 +206,7 @@ describe('WeekCalendar Component', () => {
 
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       // Should create 3 sessions (one for each time slot)
       cy.get('.calendar-event').should('have.length.at.least', 3)
     })
@@ -226,14 +226,14 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown', { which: 1, buttons: 1 })
         .wait(10)
-      
+
       // Next day (Monday at same time)
       cy.get('.calendar-cell')
         .eq(48)
         .scrollIntoView()
         .trigger('mouseenter', { which: 1, buttons: 1 })
         .wait(10)
-      
+
       // Third day (Tuesday at same time)
       cy.get('.calendar-cell')
         .eq(96)
@@ -244,7 +244,7 @@ describe('WeekCalendar Component', () => {
 
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       // Should create 3 sessions (one for each day)
       cy.get('.calendar-event').should('have.length.at.least', 3)
     })
@@ -256,13 +256,13 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown', { which: 1, buttons: 1 })
         .wait(10)
-      
+
       // Drag down 2 slots on same day
       cy.get('.calendar-cell')
         .eq(2)
         .trigger('mouseenter', { which: 1, buttons: 1 })
         .wait(10)
-      
+
       // Drag to different day (Monday, slot 2)
       cy.get('.calendar-cell')
         .eq(50)
@@ -273,7 +273,7 @@ describe('WeekCalendar Component', () => {
 
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       // Should create sessions spanning the dragged range
       // (3 time slots * 2 days = 6 sessions)
       cy.get('.calendar-event').should('have.length.at.least', 6)
@@ -292,7 +292,7 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown', { which: 1, buttons: 1 })
         .wait(10)
-      
+
       cy.get('.calendar-cell')
         .eq(3)
         .trigger('mouseenter', { which: 1, buttons: 1 })
@@ -301,7 +301,7 @@ describe('WeekCalendar Component', () => {
 
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       // Verify sessions were created
       cy.get('.calendar-event').should('have.length.at.least', 4)
 
@@ -312,7 +312,7 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown', { which: 1, buttons: 1 })
         .wait(10)
-      
+
       cy.get('.calendar-cell')
         .eq(2)
         .trigger('mouseenter', { which: 1, buttons: 1 })
@@ -321,7 +321,7 @@ describe('WeekCalendar Component', () => {
 
       // Wait for debounced delete to complete
       cy.wait(5500)
-      
+
       // Should have deleted some sessions
       cy.get('.calendar-event').should('have.length.lessThan', 4)
     })
@@ -334,21 +334,21 @@ describe('WeekCalendar Component', () => {
         .trigger('mousedown', { which: 1 })
         .trigger('mouseup')
         .wait(50)
-      
+
       cy.get('.calendar-cell')
         .eq(1)
         .scrollIntoView()
         .trigger('mousedown', { which: 1 })
         .trigger('mouseup')
         .wait(50)
-      
+
       cy.get('.calendar-cell')
         .eq(2)
         .scrollIntoView()
         .trigger('mousedown', { which: 1 })
         .trigger('mouseup')
         .wait(50)
-      
+
       cy.get('.calendar-cell')
         .eq(3)
         .scrollIntoView()
@@ -358,7 +358,7 @@ describe('WeekCalendar Component', () => {
 
       // Wait for all creates to be saved
       cy.wait(5500)
-      
+
       // Verify 4 sessions were created
       cy.get('.calendar-event').should('have.length', 4)
 
@@ -369,7 +369,7 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown', { which: 1, buttons: 1 })
         .wait(10)
-      
+
       cy.get('.calendar-cell')
         .eq(2)
         .trigger('mouseenter', { which: 1, buttons: 1 })
@@ -378,7 +378,7 @@ describe('WeekCalendar Component', () => {
 
       // Wait for delete to be saved
       cy.wait(5500)
-      
+
       // Should have 2 sessions left (cells 0 and 3)
       cy.get('.calendar-event').should('have.length', 2)
     })
@@ -406,7 +406,7 @@ describe('WeekCalendar Component', () => {
 
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       cy.get('.calendar-event').should('have.length.at.least', 1)
     })
   })
@@ -422,10 +422,10 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
-      
+
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       cy.get('.player-name').should('contain', 'Campanha')
     })
 
@@ -435,10 +435,10 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
-      
+
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       cy.get('.event-time').should('be.visible')
     })
 
@@ -448,10 +448,10 @@ describe('WeekCalendar Component', () => {
         .scrollIntoView()
         .trigger('mousedown')
         .trigger('mouseup')
-      
+
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       cy.get('.calendar-event')
         .trigger('mouseenter')
         .should('have.css', 'transform')
@@ -507,7 +507,7 @@ describe('WeekCalendar Component', () => {
 
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       // Should toggle properly (odd number of clicks = session exists)
       cy.get('.calendar-event').should('exist')
     })
@@ -521,7 +521,7 @@ describe('WeekCalendar Component', () => {
 
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       cy.get('.calendar-event').should('exist')
     })
 
@@ -534,7 +534,7 @@ describe('WeekCalendar Component', () => {
 
       // Wait for debounced save to complete
       cy.wait(5500)
-      
+
       cy.get('.calendar-event').should('exist')
     })
   })

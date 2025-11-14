@@ -30,7 +30,7 @@
     "overlayMessage": "Please select your player to interact with the calendar",
     "deleteConfirm": "Delete this event?",
     "selectTimeSlot": "Please select a time slot",
-    "allPlayersAvailable": "All Players Available"
+    "allPlayersAvailable": "Session start available"
   },
   "days": {
     "sunday": "Sunday",
@@ -63,4 +63,3 @@
     "confirmButton": "Confirm"
   }
 }
-

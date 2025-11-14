@@ -54,7 +54,9 @@ export const usePlayerManager = (options: UsePlayerManagerOptions = {}) => {
         if (insertError) throw insertError
 
         if (data && data[0]) {
-          setPlayers(prev => [...prev, data[0]].sort((a, b) => a.name.localeCompare(b.name)))
+          setPlayers(prev =>
+            [...prev, data[0]].sort((a, b) => a.name.localeCompare(b.name))
+          )
           return data[0]
         }
 
@@ -82,7 +84,9 @@ export const usePlayerManager = (options: UsePlayerManagerOptions = {}) => {
 
         if (data && data[0]) {
           setPlayers(prev =>
-            prev.map(p => (p.id === id ? data[0] : p)).sort((a, b) => a.name.localeCompare(b.name))
+            prev
+              .map(p => (p.id === id ? data[0] : p))
+              .sort((a, b) => a.name.localeCompare(b.name))
           )
           return data[0]
         }
@@ -208,4 +212,3 @@ export const usePlayerManager = (options: UsePlayerManagerOptions = {}) => {
     getRegularPlayers,
   }
 }
-

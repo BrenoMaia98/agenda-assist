@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import type { CalendarEvent, PendingChanges } from '../contexts/types'
 
 export interface DragPosition {
@@ -45,6 +45,11 @@ export const useDragAndDrop = (
   const [dragStart, setDragStart] = useState<DragPosition | null>(null)
   const [dragEnd, setDragEnd] = useState<DragPosition | null>(null)
 
+  // Use refs to track drag state synchronously (to avoid race conditions with async state updates)
+  const isDraggingRef = useRef(false)
+  const dragStartRef = useRef<DragPosition | null>(null)
+  const dragEndRef = useRef<DragPosition | null>(null)
+
   // Mouse interaction handlers
   const handleMouseDown = useCallback(
     (day: number, hour: number) => {
@@ -53,25 +58,36 @@ export const useDragAndDrop = (
         return
       }
 
+      const position = { day, hour }
+
+      // Update refs immediately for synchronous access
+      isDraggingRef.current = true
+      dragStartRef.current = position
+      dragEndRef.current = position
+
+      // Update state for rendering
       setIsDragging(true)
-      setDragStart({ day, hour })
-      setDragEnd({ day, hour })
+      setDragStart(position)
+      setDragEnd(position)
     },
     [playerName, t]
   )
 
-  const handleMouseEnter = useCallback(
-    (day: number, hour: number) => {
-      if (isDragging && dragStart) {
-        setDragEnd({ day, hour })
-      }
-    },
-    [isDragging, dragStart]
-  )
+  const handleMouseEnter = useCallback((day: number, hour: number) => {
+    // Use ref for synchronous check to avoid race conditions
+    if (isDraggingRef.current && dragStartRef.current) {
+      const position = { day, hour }
+      dragEndRef.current = position
+      setDragEnd(position)
+    }
+  }, [])
 
   const handleMouseUp = useCallback(() => {
-    if (isDragging && dragStart && dragEnd) {
+    // Use refs for the final drag state to ensure we have the latest values
+    if (isDraggingRef.current && dragStartRef.current && dragEndRef.current) {
       const events = displayedEvents
+      const dragStart = dragStartRef.current
+      const dragEnd = dragEndRef.current
 
       // Check if there's a session FOR THE CURRENT PLAYER at the starting position
       const startingEvent = events.find(
@@ -133,13 +149,14 @@ export const useDragAndDrop = (
         } else {
           // Started on empty cell: CREATE mode - OPTIMISTIC UPDATE
           const newEvents: CalendarEvent[] = []
+          let idCounter = 0
 
           // Create sessions for each day in the range
           for (let d = startDay; d <= endDay; d++) {
             // Create sessions for each hour in the range
             for (let h = startHour; h <= endHour; h += 0.5) {
               newEvents.push({
-                id: `temp-${Date.now()}-${d}-${h}`,
+                id: `temp-${Date.now()}-${idCounter++}-d${d}-h${h}`,
                 day: d,
                 startHour: h,
                 duration: SESSION_DURATION,
@@ -160,13 +177,16 @@ export const useDragAndDrop = (
       scheduleSave()
     }
 
+    // Reset refs
+    isDraggingRef.current = false
+    dragStartRef.current = null
+    dragEndRef.current = null
+
+    // Reset state
     setIsDragging(false)
     setDragStart(null)
     setDragEnd(null)
   }, [
-    isDragging,
-    dragStart,
-    dragEnd,
     displayedEvents,
     playerName,
     SESSION_DURATION,
@@ -184,4 +204,3 @@ export const useDragAndDrop = (
     handleMouseUp,
   }
 }
-
