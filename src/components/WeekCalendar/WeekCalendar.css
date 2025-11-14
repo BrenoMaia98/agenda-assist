@@ -389,8 +389,20 @@
 }
 
 .calendar-cell.all-players-available {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-  border: 2px solid #047857;
+  background: linear-gradient(
+    135deg,
+    var(--gradient-green-start) 0%,
+    var(--gradient-green-end) 100%
+  ) !important;
+  border: 2px solid var(--gradient-green-border);
+}
+
+.calendar-cell.all-players-available .calendar-event {
+  background: linear-gradient(
+    135deg,
+    var(--gradient-green-start) 0%,
+    var(--gradient-green-end) 100%
+  ) !important;
 }
 
 .calendar-cell.dimmed {
@@ -677,8 +689,20 @@
   }
 
   .calendar-cell.all-players-available {
-    background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
-    border: 2px solid #059669;
+    background: linear-gradient(
+      135deg,
+      var(--gradient-green-start) 0%,
+      var(--gradient-green-end) 100%
+    ) !important;
+    border: 2px solid var(--gradient-green-border);
+  }
+
+  .calendar-cell.all-players-available .calendar-event {
+    background: linear-gradient(
+      135deg,
+      var(--gradient-green-start) 0%,
+      var(--gradient-green-end) 100%
+    ) !important;
   }
 
   .calendar-cell.dimmed {

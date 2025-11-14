@@ -38,7 +38,7 @@ describe('WeekCalendar Utils', () => {
     it('should handle minutes close to 59 (23.98)', () => {
       // 23.98 * 60 % 60 = 58.8 minutes, which pads to "58:48"
       // Using a cleaner test case: 23 hours 59 minutes = 23 + 59/60 = 23.983333...
-      const result = formatTime(23 + 59/60)
+      const result = formatTime(23 + 59 / 60)
       expect(result).toBe('11:59 PM')
     })
 
@@ -430,4 +430,3 @@ describe('WeekCalendar Utils', () => {
     })
   })
 })
-

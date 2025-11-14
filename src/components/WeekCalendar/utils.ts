@@ -103,3 +103,54 @@ export const getSessionsStartingAt = (
   return sessions
 }
 
+/**
+ * Checks if all players have started a session at the exact same cell
+ * @param day - Day of the week (0-6)
+ * @param hour - Hour of the day (decimal, e.g., 10.5 for 10:30)
+ * @param events - Array of calendar events
+ * @param totalPlayers - Total number of players
+ * @returns True if all players started at this exact cell
+ */
+export const allPlayersStartedAt = (
+  day: number,
+  hour: number,
+  events: CalendarEvent[],
+  totalPlayers: number
+): boolean => {
+  const playersStarting = getPlayersStartingAt(day, hour, events)
+  return playersStarting.length === totalPlayers && totalPlayers > 0
+}
+
+/**
+ * Checks if a cell is within 3 hours from a session start where all players agreed
+ * @param day - Day of the week (0-6)
+ * @param hour - Hour of the day (decimal, e.g., 10.5 for 10:30)
+ * @param events - Array of calendar events
+ * @param totalPlayers - Total number of players
+ * @returns True if this cell is part of a 3-hour session where all players started together
+ */
+export const isInAgreedSession = (
+  day: number,
+  hour: number,
+  events: CalendarEvent[],
+  totalPlayers: number
+): boolean => {
+  // Check if all players started at this exact cell
+  if (allPlayersStartedAt(day, hour, events, totalPlayers)) {
+    return true
+  }
+
+  // Check if all players started at a cell before this one (within 3 hours)
+  // We need to check backwards up to 3 hours (6 cells of 0.5 hours each)
+  for (let offset = 0.5; offset <= 3; offset += 0.5) {
+    const checkHour = hour - offset
+    if (
+      checkHour >= 0 &&
+      allPlayersStartedAt(day, checkHour, events, totalPlayers)
+    ) {
+      return true
+    }
+  }
+
+  return false
+}
