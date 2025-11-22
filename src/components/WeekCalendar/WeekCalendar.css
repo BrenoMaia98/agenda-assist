@@ -169,6 +169,15 @@
   color: var(--text-dark-white);
 }
 
+/* Hide mobile-only elements on desktop */
+.header-toggle-button {
+  display: none;
+}
+
+.header-collapsible {
+  display: block;
+}
+
 .setting-field {
   display: flex;
   align-items: center;
@@ -834,5 +843,313 @@
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 767px) {
+  .week-calendar {
+    padding: var(--mobile-spacing-sm);
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .calendar-header {
+    margin-bottom: var(--mobile-spacing-md);
+  }
+
+  .header-top {
+    flex-wrap: wrap;
+    gap: var(--mobile-spacing-sm);
+  }
+
+  .calendar-header h1 {
+    font-size: var(--mobile-font-xxl);
+    width: 100%;
+    order: -1;
+  }
+
+  /* Collapsible header toggle button */
+  .header-toggle-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: var(--mobile-spacing-md);
+    background: linear-gradient(
+      135deg,
+      var(--bg-dark-quaternary) 0%,
+      #1a1a2a 100%
+    );
+    border: 1px solid var(--border-dark-secondary);
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text-dark-secondary);
+    font-weight: 600;
+    font-size: var(--mobile-font-md);
+    transition: all 0.2s;
+    margin-bottom: var(--mobile-spacing-sm);
+  }
+
+  .header-toggle-button:hover {
+    background: linear-gradient(135deg, #2a2a3a 0%, #2a2a4a 100%);
+    border-color: var(--color-primary);
+  }
+
+  .header-toggle-button svg {
+    margin-left: var(--mobile-spacing-sm);
+    transition: transform 0.2s;
+  }
+
+  .header-toggle-button.expanded svg {
+    transform: rotate(180deg);
+  }
+
+  /* Collapsible content */
+  .header-collapsible {
+    overflow: hidden;
+    transition:
+      max-height 0.3s ease,
+      opacity 0.3s ease,
+      margin 0.3s ease;
+  }
+
+  .header-collapsible.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  .header-collapsible.expanded {
+    max-height: 2000px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .header-collapsible .header-top {
+    margin-bottom: var(--mobile-spacing-md);
+  }
+
+  .session-info {
+    flex-direction: column;
+    gap: var(--mobile-spacing-lg);
+    padding: var(--mobile-spacing-lg);
+    align-items: stretch;
+  }
+
+  .session-title-display {
+    flex-direction: column;
+    gap: var(--mobile-spacing-xs);
+    text-align: center;
+  }
+
+  .session-label {
+    font-size: var(--mobile-font-sm);
+  }
+
+  .session-title {
+    font-size: var(--mobile-font-xl);
+  }
+
+  .session-duration {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid var(--border-dark-secondary);
+    padding-top: var(--mobile-spacing-md);
+    justify-content: center;
+  }
+
+  .session-duration label {
+    font-size: var(--mobile-font-sm);
+  }
+
+  .duration-value {
+    font-size: var(--mobile-font-md);
+  }
+
+  .session-player {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid var(--border-dark-secondary);
+    padding-top: var(--mobile-spacing-md);
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .session-player label {
+    font-size: var(--mobile-font-sm);
+    text-align: center;
+    margin-bottom: var(--mobile-spacing-sm);
+  }
+
+  .session-player > div {
+    flex-direction: column;
+    gap: var(--mobile-spacing-sm);
+  }
+
+  .player-name-select {
+    min-width: auto;
+    width: 100%;
+    min-height: var(--mobile-tap-target);
+    font-size: var(--mobile-font-md);
+  }
+
+  .change-user-button {
+    width: 100%;
+    min-height: var(--mobile-tap-target);
+    font-size: var(--mobile-font-md);
+  }
+
+  .view-toggle {
+    padding: var(--mobile-spacing-md) var(--mobile-spacing-sm);
+    gap: var(--mobile-spacing-sm);
+  }
+
+  .view-toggle button {
+    flex: 1;
+    min-height: var(--mobile-tap-target);
+    font-size: var(--mobile-font-md);
+    padding: var(--mobile-spacing-md);
+  }
+
+  /* Calendar grid with horizontal scroll */
+  .calendar-grid-container {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  .calendar-grid {
+    grid-template-columns: 60px repeat(7, var(--mobile-grid-column-width));
+    min-width: auto;
+  }
+
+  .time-header {
+    width: 60px;
+  }
+
+  .day-header {
+    padding: var(--mobile-spacing-md) var(--mobile-spacing-xs);
+    min-width: var(--mobile-grid-column-width);
+  }
+
+  .day-name {
+    font-size: var(--mobile-font-sm);
+    font-weight: 600;
+  }
+
+  .time-label {
+    padding: var(--mobile-spacing-xs);
+    font-size: var(--mobile-font-xs);
+    width: 60px;
+    min-height: 40px;
+  }
+
+  .calendar-cell {
+    min-height: 40px;
+    min-width: var(--mobile-grid-column-width);
+  }
+
+  /* Adjust event display for smaller cells */
+  .calendar-event {
+    padding: var(--mobile-spacing-xs);
+  }
+
+  .player-name {
+    font-size: var(--mobile-font-xs);
+  }
+
+  .event-time {
+    font-size: 0.55rem;
+  }
+
+  .player-name-display {
+    font-size: 0.55rem;
+  }
+
+  .session-time-display {
+    font-size: 0.5rem;
+  }
+
+  .all-available-badge {
+    font-size: 0.55rem;
+    padding: var(--mobile-spacing-xs) var(--mobile-spacing-sm);
+  }
+
+  .continuation-label {
+    font-size: 0.5rem;
+  }
+
+  /* Save indicator - adjust position for mobile */
+  .week-calendar > div[style*='position: fixed'] {
+    bottom: var(--mobile-spacing-sm) !important;
+    left: var(--mobile-spacing-sm) !important;
+    right: var(--mobile-spacing-sm) !important;
+    width: auto !important;
+    font-size: var(--mobile-font-sm) !important;
+    padding: var(--mobile-spacing-sm) var(--mobile-spacing-md) !important;
+  }
+
+  /* Overlay message for mobile */
+  .calendar-overlay p {
+    font-size: var(--mobile-font-md);
+    padding: var(--mobile-spacing-lg);
+  }
+
+  .required-badge {
+    font-size: var(--mobile-font-xs);
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  .week-calendar {
+    padding: var(--mobile-spacing-xs);
+  }
+
+  .calendar-header h1 {
+    font-size: var(--mobile-font-xl);
+  }
+
+  .session-info {
+    padding: var(--mobile-spacing-md);
+    gap: var(--mobile-spacing-md);
+  }
+
+  .session-title {
+    font-size: var(--mobile-font-lg);
+  }
+
+  .calendar-grid {
+    grid-template-columns: 50px repeat(7, 100px);
+  }
+
+  .time-label {
+    width: 50px;
+  }
+
+  .day-header {
+    min-width: 100px;
+  }
+
+  .calendar-cell {
+    min-width: 100px;
+  }
+}
+
+/* Light mode adjustments for mobile */
+@media (max-width: 767px) and (prefers-color-scheme: light) {
+  .header-toggle-button {
+    background: linear-gradient(135deg, #f0f4ff 0%, var(--bg-light-field) 100%);
+    border-color: var(--border-light-tertiary);
+    color: var(--text-light-secondary);
+  }
+
+  .header-toggle-button:hover {
+    background: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 100%);
+    border-color: var(--color-primary);
   }
 }

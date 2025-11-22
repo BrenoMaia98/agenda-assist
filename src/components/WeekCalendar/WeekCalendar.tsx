@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCalendar } from '../../contexts/CalendarContext'
 import { usePlayerManager } from '../../hooks'
@@ -47,6 +47,9 @@ const WeekCalendar = () => {
 
   // Ref for the calendar container to prevent text selection
   const calendarRef = useRef<HTMLDivElement>(null)
+
+  // State for mobile header collapse
+  const [isHeaderExpanded, setIsHeaderExpanded] = useState(false)
 
   // Prevent text selection during drag operations
   useEffect(() => {
@@ -111,143 +114,174 @@ const WeekCalendar = () => {
       onMouseLeave={handleMouseUp}
     >
       <div className="calendar-header">
-        <div className="header-top">
-          <h1>{t('app.title')}</h1>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <ThemeToggle />
-            <LanguageSwitcher />
-          </div>
-        </div>
-
-        {loading && (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '1rem',
-              color: 'var(--text-secondary)',
-            }}
+        {/* Mobile header toggle button */}
+        <button
+          className={`header-toggle-button ${isHeaderExpanded ? 'expanded' : 'collapsed'}`}
+          onClick={() => setIsHeaderExpanded(!isHeaderExpanded)}
+          aria-expanded={isHeaderExpanded}
+          aria-controls="header-collapsible"
+        >
+          {isHeaderExpanded ? t('mobile.hideDetails') : t('mobile.showDetails')}
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            {t('view.loading')}
-          </div>
-        )}
+            <path
+              d="M4 6L8 10L12 6"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </svg>
+        </button>
 
-        {error && (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '1rem',
-              color: 'var(--error-color)',
-            }}
-          >
-            {error}
+        <div
+          id="header-collapsible"
+          className={`header-collapsible ${isHeaderExpanded ? 'expanded' : 'collapsed'}`}
+        >
+          <div className="header-top">
+            <h1>{t('app.title')}</h1>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <ThemeToggle />
+              <LanguageSwitcher />
+            </div>
           </div>
-        )}
 
-        <div className="session-info">
-          <div className="session-title-display">
-            <span className="session-label">{t('session.label')}</span>
-            <h2 className="session-title">{t('session.title')}</h2>
-          </div>
-          <div className="session-duration">
-            <label>{t('session.duration')}</label>
-            <span className="duration-value">
-              {SESSION_DURATION} {t('session.hours')}
-            </span>
-          </div>
-          <div className="session-player">
-            <label htmlFor="player-name">{t('player.label')}</label>
+          {loading && (
             <div
-              style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}
+              style={{
+                textAlign: 'center',
+                padding: '1rem',
+                color: 'var(--text-secondary)',
+              }}
             >
-              <select
-                id="player-name"
-                value={playerName}
-                onChange={e => setPlayerName(e.target.value)}
-                className="player-name-select"
-                required
+              {t('view.loading')}
+            </div>
+          )}
+
+          {error && (
+            <div
+              style={{
+                textAlign: 'center',
+                padding: '1rem',
+                color: 'var(--error-color)',
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          <div className="session-info">
+            <div className="session-title-display">
+              <span className="session-label">{t('session.label')}</span>
+              <h2 className="session-title">{t('session.title')}</h2>
+            </div>
+            <div className="session-duration">
+              <label>{t('session.duration')}</label>
+              <span className="duration-value">
+                {SESSION_DURATION} {t('session.hours')}
+              </span>
+            </div>
+            <div className="session-player">
+              <label htmlFor="player-name">{t('player.label')}</label>
+              <div
+                style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}
               >
-                <option value="">{t('player.placeholder')}</option>
-                {players.map(player => (
-                  <option key={player.id} value={player.name}>
-                    {player.name}
-                    {player.is_gm ? ' (GM)' : ''}
-                  </option>
-                ))}
-              </select>
-              {currentUser && (
-                <button
-                  onClick={() => setShowPlayerModal(true)}
-                  className="change-user-button"
-                  title={t('player.changeUser')}
+                <select
+                  id="player-name"
+                  value={playerName}
+                  onChange={e => setPlayerName(e.target.value)}
+                  className="player-name-select"
+                  required
                 >
-                  {t('player.changeUser')}
-                </button>
+                  <option value="">{t('player.placeholder')}</option>
+                  {players.map(player => (
+                    <option key={player.id} value={player.name}>
+                      {player.name}
+                      {player.is_gm ? ' (GM)' : ''}
+                    </option>
+                  ))}
+                </select>
+                {currentUser && (
+                  <button
+                    onClick={() => setShowPlayerModal(true)}
+                    className="change-user-button"
+                    title={t('player.changeUser')}
+                  >
+                    {t('player.changeUser')}
+                  </button>
+                )}
+              </div>
+              {playerName.trim().length === 0 && (
+                <span className="required-badge">{t('player.required')}</span>
               )}
             </div>
-            {playerName.trim().length === 0 && (
-              <span className="required-badge">{t('player.required')}</span>
-            )}
           </div>
-        </div>
-        <div
-          className="view-toggle"
-          style={{
-            padding: '0.5rem 1rem',
-            display: 'flex',
-            gap: '1rem',
-            justifyContent: 'center',
-          }}
-        >
-          <button
-            onClick={() => setViewMode('personal')}
-            className={viewMode === 'personal' ? 'active' : ''}
+          <div
+            className="view-toggle"
             style={{
               padding: '0.5rem 1rem',
-              border:
-                viewMode === 'personal'
-                  ? '2px solid var(--color-primary)'
-                  : '1px solid var(--border-color)',
-              borderRadius: '4px',
-              background:
-                viewMode === 'personal'
-                  ? 'var(--primary-color)'
-                  : 'transparent',
-              color: viewMode === 'personal' ? 'white' : 'var(--text-color)',
-              cursor: 'pointer',
-              fontWeight: viewMode === 'personal' ? 'bold' : 'normal',
-              boxShadow:
-                viewMode === 'personal'
-                  ? '0 0 0 2px rgba(139, 92, 246, 0.2)'
-                  : 'none',
-              transition: 'all 0.2s ease',
+              display: 'flex',
+              gap: '1rem',
+              justifyContent: 'center',
             }}
           >
-            {t('view.myAvailability')}
-          </button>
-          <button
-            onClick={() => setViewMode('all')}
-            className={viewMode === 'all' ? 'active' : ''}
-            style={{
-              padding: '0.5rem 1rem',
-              border:
-                viewMode === 'all'
-                  ? '2px solid var(--color-primary)'
-                  : '1px solid var(--border-color)',
-              borderRadius: '4px',
-              background:
-                viewMode === 'all' ? 'var(--primary-color)' : 'transparent',
-              color: viewMode === 'all' ? 'white' : 'var(--text-color)',
-              cursor: 'pointer',
-              fontWeight: viewMode === 'all' ? 'bold' : 'normal',
-              boxShadow:
-                viewMode === 'all'
-                  ? '0 0 0 2px rgba(139, 92, 246, 0.2)'
-                  : 'none',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            {t('view.allPlayers')}
-          </button>
+            <button
+              onClick={() => setViewMode('personal')}
+              className={viewMode === 'personal' ? 'active' : ''}
+              style={{
+                padding: '0.5rem 1rem',
+                border:
+                  viewMode === 'personal'
+                    ? '2px solid var(--color-primary)'
+                    : '1px solid var(--border-color)',
+                borderRadius: '4px',
+                background:
+                  viewMode === 'personal'
+                    ? 'var(--primary-color)'
+                    : 'transparent',
+                color: viewMode === 'personal' ? 'white' : 'var(--text-color)',
+                cursor: 'pointer',
+                fontWeight: viewMode === 'personal' ? 'bold' : 'normal',
+                boxShadow:
+                  viewMode === 'personal'
+                    ? '0 0 0 2px rgba(139, 92, 246, 0.2)'
+                    : 'none',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {t('view.myAvailability')}
+            </button>
+            <button
+              onClick={() => setViewMode('all')}
+              className={viewMode === 'all' ? 'active' : ''}
+              style={{
+                padding: '0.5rem 1rem',
+                border:
+                  viewMode === 'all'
+                    ? '2px solid var(--color-primary)'
+                    : '1px solid var(--border-color)',
+                borderRadius: '4px',
+                background:
+                  viewMode === 'all' ? 'var(--primary-color)' : 'transparent',
+                color: viewMode === 'all' ? 'white' : 'var(--text-color)',
+                cursor: 'pointer',
+                fontWeight: viewMode === 'all' ? 'bold' : 'normal',
+                boxShadow:
+                  viewMode === 'all'
+                    ? '0 0 0 2px rgba(139, 92, 246, 0.2)'
+                    : 'none',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {t('view.allPlayers')}
+            </button>
+          </div>
         </div>
       </div>
 

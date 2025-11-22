@@ -163,3 +163,60 @@
   cursor: not-allowed;
   box-shadow: none;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 767px) {
+  .modal-content {
+    padding: var(--mobile-spacing-lg);
+    max-width: calc(100vw - var(--mobile-spacing-lg) * 2);
+    min-height: auto;
+  }
+
+  .modal-language-switcher {
+    top: var(--mobile-spacing-sm);
+    right: var(--mobile-spacing-sm);
+  }
+
+  .modal-title {
+    font-size: var(--mobile-font-xl);
+    min-height: auto;
+    margin-bottom: var(--mobile-spacing-sm);
+  }
+
+  .modal-description {
+    font-size: var(--mobile-font-md);
+    min-height: auto;
+    margin-bottom: var(--mobile-spacing-lg);
+  }
+
+  .modal-player-selector {
+    margin-bottom: var(--mobile-spacing-lg);
+  }
+
+  .modal-select {
+    padding: var(--mobile-spacing-md) var(--mobile-spacing-lg);
+    font-size: var(--mobile-font-md);
+    min-height: var(--mobile-tap-target);
+  }
+
+  .modal-confirm-button {
+    padding: var(--mobile-spacing-md) var(--mobile-spacing-lg);
+    font-size: var(--mobile-font-md);
+    min-height: var(--mobile-tap-target);
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    padding: var(--mobile-spacing-md);
+    max-width: calc(100vw - var(--mobile-spacing-md) * 2);
+  }
+
+  .modal-title {
+    font-size: var(--mobile-font-lg);
+  }
+
+  .modal-description {
+    font-size: var(--mobile-font-sm);
+  }
+}

@@ -182,4 +182,21 @@
   --overlay-purple-medium: rgba(102, 126, 234, 0.2);
   --overlay-purple-strong: rgba(102, 126, 234, 0.3);
   --overlay-purple-border: rgba(102, 126, 234, 0.6);
+
+  /* Mobile-specific variables */
+  --mobile-spacing-xs: 0.25rem;
+  --mobile-spacing-sm: 0.5rem;
+  --mobile-spacing-md: 0.75rem;
+  --mobile-spacing-lg: 1rem;
+  --mobile-spacing-xl: 1.5rem;
+  
+  --mobile-font-xs: 0.65rem;
+  --mobile-font-sm: 0.75rem;
+  --mobile-font-md: 0.875rem;
+  --mobile-font-lg: 1rem;
+  --mobile-font-xl: 1.25rem;
+  --mobile-font-xxl: 1.5rem;
+  
+  --mobile-tap-target: 44px;
+  --mobile-grid-column-width: 120px;
 }

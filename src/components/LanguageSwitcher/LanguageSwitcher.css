@@ -50,3 +50,25 @@
     color: var(--text-dark-white);
   }
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 767px) {
+  .language-switcher {
+    padding: var(--mobile-spacing-xs);
+    gap: var(--mobile-spacing-xs);
+  }
+
+  .lang-button {
+    padding: var(--mobile-spacing-sm) var(--mobile-spacing-md);
+    font-size: var(--mobile-font-sm);
+    min-width: 40px;
+    min-height: var(--mobile-tap-target);
+  }
+}
+
+@media (max-width: 480px) {
+  .lang-button {
+    padding: var(--mobile-spacing-xs) var(--mobile-spacing-sm);
+    font-size: var(--mobile-font-xs);
+  }
+}

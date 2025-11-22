@@ -62,5 +62,9 @@
     "title": "Quem é você?",
     "description": "Selecione seu jogador para personalizar sua experiência",
     "confirmButton": "Confirmar"
+  },
+  "mobile": {
+    "showDetails": "Mostrar Detalhes",
+    "hideDetails": "Ocultar Detalhes"
   }
 }

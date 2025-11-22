@@ -71,3 +71,25 @@
 [data-theme='dark'] .theme-button.active {
   background-color: var(--color-primary);
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 767px) {
+  .theme-toggle {
+    padding: var(--mobile-spacing-xs);
+    gap: var(--mobile-spacing-xs);
+  }
+
+  .theme-button {
+    padding: var(--mobile-spacing-sm) var(--mobile-spacing-md);
+    font-size: var(--mobile-font-lg);
+    min-width: var(--mobile-tap-target);
+    min-height: var(--mobile-tap-target);
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-button {
+    padding: var(--mobile-spacing-sm);
+    font-size: var(--mobile-font-md);
+  }
+}

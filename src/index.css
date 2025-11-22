@@ -95,3 +95,48 @@ button:focus-visible {
 [data-theme='dark'] button {
   background-color: var(--bg-dark-primary);
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 767px) {
+  :root {
+    font-size: 14px; /* Slightly smaller base font for mobile */
+  }
+
+  body {
+    min-width: 320px;
+    overflow-x: hidden;
+  }
+
+  #root {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  h1 {
+    font-size: 2em;
+    line-height: 1.2;
+  }
+
+  button {
+    padding: 0.7em 1em;
+    font-size: 1em;
+    touch-action: manipulation; /* Improves touch responsiveness */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+
+  /* Ensure smooth scrolling on mobile */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    font-size: 13px;
+  }
+
+  h1 {
+    font-size: 1.75em;
+  }
+}

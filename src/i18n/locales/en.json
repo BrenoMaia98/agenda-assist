@@ -62,5 +62,9 @@
     "title": "Who are you?",
     "description": "Select your player to personalize your experience",
     "confirmButton": "Confirm"
+  },
+  "mobile": {
+    "showDetails": "Show Details",
+    "hideDetails": "Hide Details"
   }
 }
