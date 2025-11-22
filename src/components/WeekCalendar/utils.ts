@@ -8,12 +8,14 @@ export interface SessionInfo {
 
 /**
  * Formats a decimal hour value into 12-hour time format with AM/PM
- * @param hour - Decimal hour (e.g., 13.5 for 1:30 PM)
+ * @param hour - Decimal hour (e.g., 13.5 for 1:30 PM, 24.5 for 12:30 AM next day)
  * @returns Formatted time string (e.g., "1:30 PM")
  */
 export const formatTime = (hour: number): string => {
-  const fullHour = Math.floor(hour)
-  const minutes = Math.round((hour % 1) * 60)
+  // Normalize hour to 0-23 range (handle times past midnight)
+  const normalizedHour = hour % 24
+  const fullHour = Math.floor(normalizedHour)
+  const minutes = Math.round((normalizedHour % 1) * 60)
   const period = fullHour >= 12 ? 'PM' : 'AM'
   const displayHour =
     fullHour === 0 ? 12 : fullHour > 12 ? fullHour - 12 : fullHour
@@ -153,4 +155,55 @@ export const isInAgreedSession = (
   }
 
   return false
+}
+
+/**
+ * Gets sessions from the previous day that extend into the current day (past midnight)
+ * @param day - Current day of the week (0-6)
+ * @param hour - Hour of the current day (0-23.5)
+ * @param events - Array of calendar events
+ * @returns Array of sessions that started yesterday and continue into this hour today
+ */
+export const getSessionsFromPreviousDay = (
+  day: number,
+  hour: number,
+  events: CalendarEvent[]
+): CalendarEvent[] => {
+  // Previous day wraps around (Saturday 6 -> Sunday 0)
+  const previousDay = (day - 1 + 7) % 7
+  
+  const continuingSessions: CalendarEvent[] = []
+  
+  events.forEach(event => {
+    if (event.day === previousDay) {
+      const sessionEnd = event.startHour + event.duration
+      
+      // If session extends past midnight (24 hours)
+      if (sessionEnd > 24) {
+        const hoursIntoNextDay = sessionEnd - 24
+        
+        // Check if current hour falls within the continuation
+        if (hour < hoursIntoNextDay) {
+          continuingSessions.push(event)
+        }
+      }
+    }
+  })
+  
+  return continuingSessions
+}
+
+/**
+ * Checks if a cell is part of a session that started on the previous day
+ * @param day - Current day of the week (0-6)
+ * @param hour - Hour of the current day (0-23.5)
+ * @param events - Array of calendar events
+ * @returns True if this cell is covered by a session from the previous day
+ */
+export const isContinuationCell = (
+  day: number,
+  hour: number,
+  events: CalendarEvent[]
+): boolean => {
+  return getSessionsFromPreviousDay(day, hour, events).length > 0
 }

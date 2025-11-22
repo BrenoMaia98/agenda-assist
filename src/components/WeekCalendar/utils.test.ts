@@ -46,6 +46,25 @@ describe('WeekCalendar Utils', () => {
       expect(formatTime(10.25)).toBe('10:15 AM')
       expect(formatTime(14.75)).toBe('2:45 PM')
     })
+
+    it('should handle times past midnight (24+)', () => {
+      // 24.0 should be 12:00 AM (next day)
+      expect(formatTime(24)).toBe('12:00 AM')
+      // 24.5 should be 12:30 AM (next day)
+      expect(formatTime(24.5)).toBe('12:30 AM')
+      // 25.0 should be 1:00 AM (next day)
+      expect(formatTime(25)).toBe('1:00 AM')
+      // 26.5 should be 2:30 AM (next day)
+      expect(formatTime(26.5)).toBe('2:30 AM')
+    })
+
+    it('should handle session ending after 11:30 PM', () => {
+      // Session starts at 11:30 PM (23.5) with 1 hour duration ends at 12:30 AM (24.5)
+      const startTime = 23.5
+      const duration = 1
+      const endTime = startTime + duration
+      expect(formatTime(endTime)).toBe('12:30 AM')
+    })
   })
 
   describe('getPlayersAtTimeSlot', () => {

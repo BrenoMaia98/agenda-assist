@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCalendar } from '../../contexts/CalendarContext'
 import { usePlayerManager } from '../../hooks'
@@ -8,6 +8,7 @@ import {
   formatTime,
   getPlayersAtTimeSlot,
   getPlayersStartingAt,
+  getSessionsFromPreviousDay,
   getSessionsStartingAt,
 } from './utils'
 import './WeekCalendar.css'
@@ -44,6 +45,50 @@ const WeekCalendar = () => {
     supabaseClient: supabaseClient,
   })
 
+  // Ref for the calendar container to prevent text selection
+  const calendarRef = useRef<HTMLDivElement>(null)
+
+  // Prevent text selection during drag operations
+  useEffect(() => {
+    const preventSelection = (e: Event) => {
+      e.preventDefault()
+      return false
+    }
+
+    const calendarElement = calendarRef.current
+    if (calendarElement) {
+      // Add native event listeners for selectstart and dragstart
+      calendarElement.addEventListener('selectstart', preventSelection)
+      calendarElement.addEventListener('dragstart', preventSelection)
+
+      return () => {
+        calendarElement.removeEventListener('selectstart', preventSelection)
+        calendarElement.removeEventListener('dragstart', preventSelection)
+      }
+    }
+  }, [isDragging])
+
+  // Prevent document-level text selection during dragging
+  useEffect(() => {
+    if (isDragging) {
+      const preventSelection = (e: Event) => {
+        e.preventDefault()
+        return false
+      }
+
+      // Add to document to catch all selection attempts
+      document.addEventListener('selectstart', preventSelection)
+      document.body.style.userSelect = 'none'
+      document.body.style.webkitUserSelect = 'none'
+
+      return () => {
+        document.removeEventListener('selectstart', preventSelection)
+        document.body.style.userSelect = ''
+        document.body.style.webkitUserSelect = ''
+      }
+    }
+  }, [isDragging])
+
   // Generate time slots with 30-minute intervals (0, 0.5, 1, 1.5, ... 23.5)
   const timeSlots = Array.from({ length: 48 }, (_, i) => i * 0.5)
 
@@ -60,6 +105,7 @@ const WeekCalendar = () => {
 
   return (
     <div
+      ref={calendarRef}
       className="week-calendar"
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
@@ -308,6 +354,14 @@ const WeekCalendar = () => {
 
                 {/* Day cells */}
                 {daysOfWeek.map((_, dayIndex) => {
+                  // Check if this cell is a continuation from previous day
+                  const continuingSessions = getSessionsFromPreviousDay(
+                    dayIndex,
+                    timeSlot,
+                    events
+                  )
+                  const isContinuation = continuingSessions.length > 0
+
                   // Get all players available at this time slot (for highlighting)
                   const playersAtSlot = getPlayersAtTimeSlot(
                     dayIndex,
@@ -344,6 +398,15 @@ const WeekCalendar = () => {
                     (viewMode === 'personal' &&
                       playersAtSlot.includes(playerName))
 
+                  // For continuation cells, check if we should show them
+                  const shouldShowContinuation =
+                    isContinuation &&
+                    (viewMode === 'all' ||
+                      (viewMode === 'personal' &&
+                        continuingSessions.some(
+                          s => s.player_name === playerName
+                        )))
+
                   // Check if this cell is in the drag selection
                   let isInDragSelection = false
                   if (isDragging && dragStart && dragEnd) {
@@ -374,12 +437,26 @@ const WeekCalendar = () => {
                   return (
                     <div
                       key={`cell-${dayIndex}-${timeSlot}`}
-                      className={`calendar-cell ${!isFullHour ? 'half-hour' : ''} ${hasStartingSessions && shouldShowCell ? 'has-availability' : ''} ${allPlayersAvailable && shouldShowCell ? 'all-players-available' : ''} ${isInDragSelection ? 'drag-preview' : ''} ${shouldDim ? 'dimmed' : ''}`}
-                      onMouseDown={() => handleMouseDown(dayIndex, timeSlot)}
-                      onMouseEnter={() => handleMouseEnter(dayIndex, timeSlot)}
+                      className={`calendar-cell ${!isFullHour ? 'half-hour' : ''} ${hasStartingSessions && shouldShowCell ? 'has-availability' : ''} ${allPlayersAvailable && shouldShowCell ? 'all-players-available' : ''} ${isInDragSelection ? 'drag-preview' : ''} ${isContinuation && shouldShowContinuation ? 'continuation-cell' : ''}`}
+                      onMouseDown={
+                        isContinuation
+                          ? undefined
+                          : e => handleMouseDown(dayIndex, timeSlot, e)
+                      }
+                      onMouseEnter={
+                        isContinuation
+                          ? undefined
+                          : () => handleMouseEnter(dayIndex, timeSlot)
+                      }
+                      style={{
+                        cursor: isContinuation ? 'not-allowed' : 'pointer',
+                      }}
                     >
                       {/* Drag preview overlay */}
                       {isInDragSelection && <div className="drag-overlay" />}
+
+                      {/* Dimmed overlay for cells that should be visually de-emphasized */}
+                      {shouldDim && <div className="dimmed-overlay" />}
 
                       {/* Overlay for cells covered by sessions (but not starting points) */}
                       {/* Don't apply overlay to green cells where all players agreed */}
@@ -389,6 +466,24 @@ const WeekCalendar = () => {
                         !allPlayersAvailable && (
                           <div className="cell-overlay" />
                         )}
+
+                      {/* Show continuation from previous day */}
+                      {isContinuation && shouldShowContinuation && (
+                        <div className="continuation-indicator">
+                          <div className="continuation-content">
+                            <div className="continuation-label">
+                              ← {t('calendar.continuesFromPreviousDay')}
+                            </div>
+                            <div className="player-name player-name-display">
+                              {Array.from(
+                                new Set(
+                                  continuingSessions.map(s => s.player_name)
+                                )
+                              ).join(', ')}
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Show player names ONLY at session starting points */}
                       {hasStartingSessions && shouldShowCell && (

@@ -22,7 +22,7 @@ export interface UseDragAndDropReturn {
   isDragging: boolean
   dragStart: DragPosition | null
   dragEnd: DragPosition | null
-  handleMouseDown: (day: number, hour: number) => void
+  handleMouseDown: (day: number, hour: number, event: React.MouseEvent) => void
   handleMouseEnter: (day: number, hour: number) => void
   handleMouseUp: () => void
 }
@@ -51,7 +51,12 @@ export const useDragAndDrop = (
 
   // Mouse interaction handlers
   const handleMouseDown = useCallback(
-    (day: number, hour: number) => {
+    (day: number, hour: number, event: React.MouseEvent) => {
+      // Only allow left-click (button 0)
+      if (event.button !== 0) {
+        return
+      }
+
       if (playerName.trim().length < 3) {
         alert(t('player.minLengthError'))
         return

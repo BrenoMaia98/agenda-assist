@@ -318,6 +318,10 @@
   display: grid;
   grid-template-columns: 80px repeat(7, 1fr);
   min-width: 900px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .time-header {
@@ -326,6 +330,10 @@
   background-color: var(--bg-dark-primary);
   border-bottom: 2px solid var(--border-dark-secondary);
   z-index: 20;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .day-header {
@@ -337,11 +345,19 @@
   border-bottom: 2px solid var(--border-dark-secondary);
   border-left: 1px solid var(--border-dark-primary);
   z-index: 20;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .day-name {
   font-weight: 600;
   font-size: 0.95rem;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .time-label {
@@ -353,6 +369,10 @@
   color: var(--text-dark-tertiary);
   border-bottom: 1px solid var(--border-dark-primary);
   border-right: 1px solid var(--border-dark-secondary);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   background-color: var(--bg-dark-primary);
   z-index: 10;
   min-height: 50px;
@@ -407,7 +427,7 @@
 
 .calendar-cell.dimmed {
   opacity: 0.3;
-  filter: grayscale(50%);
+  /* filter: grayscale(50%); */
 }
 
 .cell-overlay {
@@ -456,6 +476,10 @@
     var(--gradient-purple-start) 0%,
     var(--gradient-purple-end) 100%
   );
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   border-radius: 4px;
   padding: 0.4rem;
   cursor: pointer;
@@ -487,6 +511,10 @@
   margin-bottom: 0.15rem;
   color: var(--text-dark-white);
   line-height: 1.2;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .event-player {
@@ -502,6 +530,10 @@
   font-size: 0.65rem;
   color: rgba(255, 255, 255, 0.9);
   line-height: 1.2;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .availability-indicator {
@@ -528,6 +560,10 @@
   word-break: break-word;
   display: flex;
   flex-direction: column;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   gap: 0.15rem;
   max-height: 100%;
   overflow: hidden;
@@ -545,12 +581,20 @@
 .player-name-display {
   font-weight: 700;
   font-size: 0.65rem;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .session-time-display {
   font-size: 0.55rem;
   font-weight: 500;
   opacity: 0.85;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .all-available-badge {
@@ -564,6 +608,52 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Continuation cells (from previous day) */
+.calendar-cell.continuation-cell {
+  background: linear-gradient(
+    135deg,
+    var(--gradient-purple-start) 0%,
+    var(--gradient-purple-end) 100%
+  );
+  opacity: 0.4;
+  position: relative;
+}
+
+.continuation-indicator {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0.25rem;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.continuation-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  align-items: center;
+  text-align: center;
+}
+
+.continuation-label {
+  font-size: 0.55rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  line-height: 1.2;
 }
 
 /* Light mode */
@@ -729,6 +819,11 @@
       var(--overlay-green) 100%
     );
     border-color: var(--overlay-blue-border);
+  }
+
+  .calendar-cell.continuation-cell {
+    background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+    opacity: 0.4;
   }
 }
 

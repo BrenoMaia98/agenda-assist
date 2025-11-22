@@ -30,7 +30,8 @@
     "overlayMessage": "Por favor, selecione seu jogador para interagir com o calendário",
     "deleteConfirm": "Excluir este evento?",
     "selectTimeSlot": "Por favor, selecione um horário",
-    "allPlayersAvailable": "Início de sessão disponível"
+    "allPlayersAvailable": "Início de sessão disponível",
+    "continuesFromPreviousDay": "Continua do dia anterior"
   },
   "days": {
     "sunday": "Domingo",
