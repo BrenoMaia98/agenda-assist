@@ -8,7 +8,7 @@ const mockChannelCallbacks: Map<string, Function> = new Map()
 
 // Mock channel object
 const mockChannel = {
-  on: vi.fn((event: string, filter: any, callback: Function) => {
+  on: vi.fn((_event: string, _filter: any, callback: Function) => {
     mockChannelCallbacks.set('postgres_changes', callback)
     return mockChannel
   }),
@@ -20,7 +20,7 @@ export const supabase = {
   from: vi.fn((table: string) => {
     const data = table === 'players' ? mockPlayersData : mockSessionsData
     return {
-      select: vi.fn((columns?: string) => {
+      select: vi.fn((_columns?: string) => {
         const result = {
           eq: vi.fn((column: string, value: any) =>
             Promise.resolve({
@@ -28,7 +28,7 @@ export const supabase = {
               error: mockError,
             })
           ),
-          order: vi.fn((column: string) =>
+          order: vi.fn((_column: string) =>
             Promise.resolve({
               data: data,
               error: mockError,
@@ -65,7 +65,7 @@ export const supabase = {
         ),
       })),
       delete: vi.fn(() => ({
-        eq: vi.fn((column: string, value: any) =>
+        eq: vi.fn((_column: string, _value: any) =>
           Promise.resolve({
             data: null,
             error: mockError,
@@ -74,8 +74,8 @@ export const supabase = {
       })),
     }
   }),
-  channel: vi.fn((name: string) => mockChannel),
-  removeChannel: vi.fn((channel: any) => {}),
+  channel: vi.fn((_name: string) => mockChannel),
+  removeChannel: vi.fn((_channel: any) => {}),
 }
 
 // Helper functions for tests

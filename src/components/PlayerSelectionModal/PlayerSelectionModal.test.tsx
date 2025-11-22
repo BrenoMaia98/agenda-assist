@@ -5,7 +5,6 @@ import PlayerSelectionModal from './PlayerSelectionModal'
 import '../../i18n/config'
 
 // Mock Supabase
-const mockLoadPlayers = vi.fn()
 const mockSubscribe = vi.fn()
 const mockOn = vi.fn().mockReturnThis()
 const mockChannel = {

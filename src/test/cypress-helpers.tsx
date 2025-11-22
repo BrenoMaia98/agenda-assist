@@ -25,14 +25,14 @@ export const createMockSupabaseClient = () => {
     from: (table: string) => {
       const data = table === 'players' ? mockPlayers : mockSessionsData
       return {
-        select: (columns?: string) => {
+        select: (_columns?: string) => {
           const result = {
             eq: (column: string, value: any) =>
               Promise.resolve({
                 data: data.filter((item: any) => item[column] === value),
                 error: null,
               }),
-            order: (column: string) =>
+            order: (_column: string) =>
               Promise.resolve({
                 data: data,
                 error: null,
