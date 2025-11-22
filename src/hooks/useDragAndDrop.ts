@@ -33,7 +33,6 @@ export const useDragAndDrop = (
   const {
     playerName,
     displayedEvents,
-    pendingChanges,
     setPendingChanges,
     scheduleSave,
     SESSION_DURATION,

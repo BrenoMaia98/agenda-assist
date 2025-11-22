@@ -374,7 +374,7 @@ const WeekCalendar = () => {
                   return (
                     <div
                       key={`cell-${dayIndex}-${timeSlot}`}
-                      className={`calendar-cell ${!isFullHour ? 'half-hour' : ''} ${hasPlayers && shouldShowCell ? 'has-availability' : ''} ${allPlayersAvailable && shouldShowCell ? 'all-players-available' : ''} ${isInDragSelection ? 'drag-preview' : ''} ${shouldDim ? 'dimmed' : ''}`}
+                      className={`calendar-cell ${!isFullHour ? 'half-hour' : ''} ${hasStartingSessions && shouldShowCell ? 'has-availability' : ''} ${allPlayersAvailable && shouldShowCell ? 'all-players-available' : ''} ${isInDragSelection ? 'drag-preview' : ''} ${shouldDim ? 'dimmed' : ''}`}
                       onMouseDown={() => handleMouseDown(dayIndex, timeSlot)}
                       onMouseEnter={() => handleMouseEnter(dayIndex, timeSlot)}
                     >

@@ -3,10 +3,10 @@
 # top-most EditorConfig file
 root = true
 
-# Unix-style newlines with a newline ending every file
+# Unix-style newlines
 [*]
 end_of_line = lf
-insert_final_newline = true
+insert_final_newline = false
 trim_trailing_whitespace = true
 charset = utf-8
 
