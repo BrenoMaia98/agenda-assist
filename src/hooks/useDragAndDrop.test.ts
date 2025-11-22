@@ -4,6 +4,13 @@ import type { CalendarEvent, PendingChanges } from '../contexts/types'
 import type { UseDragAndDropOptions } from './useDragAndDrop'
 import { useDragAndDrop } from './useDragAndDrop'
 
+// Helper to create a mock mouse event
+const createMockMouseEvent = (): React.MouseEvent => ({
+  button: 0,
+  preventDefault: vi.fn(),
+  stopPropagation: vi.fn(),
+} as unknown as React.MouseEvent)
+
 describe('useDragAndDrop', () => {
   let mockSetPendingChanges: ReturnType<typeof vi.fn>
   let mockScheduleSave: ReturnType<typeof vi.fn>
@@ -51,7 +58,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       expect(result.current.isDragging).toBe(true)
@@ -66,7 +73,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(options))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       expect(result.current.isDragging).toBe(false)
@@ -83,7 +90,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(options))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       expect(result.current.isDragging).toBe(false)
@@ -96,13 +103,13 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       expect(result.current.dragStart).toEqual({ day: 0, hour: 10 })
 
       act(() => {
-        result.current.handleMouseDown(1, 12)
+        result.current.handleMouseDown(1, 12, createMockMouseEvent())
       })
 
       expect(result.current.dragStart).toEqual({ day: 1, hour: 12 })
@@ -114,7 +121,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -138,7 +145,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -160,7 +167,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -188,7 +195,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -204,7 +211,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -219,7 +226,7 @@ describe('useDragAndDrop', () => {
       mockSetPendingChanges.mockClear()
 
       act(() => {
-        result.current.handleMouseDown(0, 11)
+        result.current.handleMouseDown(0, 11, createMockMouseEvent())
       })
 
       act(() => {
@@ -253,7 +260,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(options))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -297,7 +304,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(options))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -332,7 +339,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(options))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -356,7 +363,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -386,7 +393,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -412,7 +419,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -435,7 +442,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(2, 11)
+        result.current.handleMouseDown(2, 11, createMockMouseEvent())
       })
 
       act(() => {
@@ -495,7 +502,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(options))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -551,7 +558,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(options))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -590,7 +597,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(options))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -628,7 +635,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -636,7 +643,7 @@ describe('useDragAndDrop', () => {
       })
 
       act(() => {
-        result.current.handleMouseDown(0, 11)
+        result.current.handleMouseDown(0, 11, createMockMouseEvent())
       })
 
       act(() => {
@@ -651,7 +658,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -668,7 +675,7 @@ describe('useDragAndDrop', () => {
       )
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -687,7 +694,7 @@ describe('useDragAndDrop', () => {
       mockSetPendingChanges.mockClear()
 
       act(() => {
-        result.current.handleMouseDown(0, 11)
+        result.current.handleMouseDown(0, 11, createMockMouseEvent())
       })
 
       act(() => {
@@ -705,7 +712,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(defaultOptions))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -733,7 +740,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderHook(() => useDragAndDrop(options))
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {

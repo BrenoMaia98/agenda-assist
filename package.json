@@ -13,7 +13,8 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run --component"
+    "cypress:run": "cypress run --component",
+    "prepare": "husky"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.81.1",
@@ -39,6 +40,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.12.0",
+    "husky": "^9.1.7",
     "jsdom": "^27.2.0",
     "prettier": "^3.3.3",
     "typescript": "^5.7.2",

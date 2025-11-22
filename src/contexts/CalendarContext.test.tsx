@@ -4,6 +4,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { supabase } from '../lib/supabase'
 import { CalendarProvider, useCalendar } from './CalendarContext'
 
+// Helper to create a mock mouse event
+const createMockMouseEvent = (): React.MouseEvent => ({
+  button: 0,
+  preventDefault: vi.fn(),
+  stopPropagation: vi.fn(),
+} as unknown as React.MouseEvent)
+
 // Mock the translation hook
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -175,7 +182,7 @@ describe('CalendarContext - Basic Functionality', () => {
       expect(result.current.playerName).toBe('TestPlayer')
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       // Verify drag state is set
@@ -206,7 +213,7 @@ describe('CalendarContext - Basic Functionality', () => {
       })
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -226,7 +233,7 @@ describe('CalendarContext - Basic Functionality', () => {
       })
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -262,7 +269,7 @@ describe('CalendarContext - Basic Functionality', () => {
       })
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -277,7 +284,7 @@ describe('CalendarContext - Basic Functionality', () => {
       })
 
       act(() => {
-        result.current.handleMouseDown(1, 10)
+        result.current.handleMouseDown(1, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -301,7 +308,7 @@ describe('CalendarContext - Basic Functionality', () => {
       })
 
       act(() => {
-        result.current.handleMouseDown(0, 10)
+        result.current.handleMouseDown(0, 10, createMockMouseEvent())
       })
 
       act(() => {
@@ -316,7 +323,7 @@ describe('CalendarContext - Basic Functionality', () => {
       })
 
       act(() => {
-        result.current.handleMouseDown(1, 10)
+        result.current.handleMouseDown(1, 10, createMockMouseEvent())
       })
 
       act(() => {

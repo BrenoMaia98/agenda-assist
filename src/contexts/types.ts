@@ -48,7 +48,7 @@ export interface CalendarContextType {
   setCurrentUser: (name: string) => void
   setViewMode: (mode: ViewMode) => void
   setShowPlayerModal: (show: boolean) => void
-  handleMouseDown: (day: number, hour: number) => void
+  handleMouseDown: (day: number, hour: number, event: React.MouseEvent) => void
   handleMouseEnter: (day: number, hour: number) => void
   handleMouseUp: () => void
   getFilteredEvents: () => CalendarEvent[]
