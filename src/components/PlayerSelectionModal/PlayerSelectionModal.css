@@ -167,9 +167,11 @@
 /* Mobile Responsive Styles */
 @media (max-width: 767px) {
   .modal-content {
-    padding: var(--mobile-spacing-lg);
+    padding: var(--mobile-spacing-xl);
     max-width: calc(100vw - var(--mobile-spacing-lg) * 2);
     min-height: auto;
+    justify-content: flex-start;
+    padding-top: 3rem;
   }
 
   .modal-language-switcher {
@@ -180,43 +182,60 @@
   .modal-title {
     font-size: var(--mobile-font-xl);
     min-height: auto;
-    margin-bottom: var(--mobile-spacing-sm);
+    margin-bottom: var(--mobile-spacing-md);
+    padding: var(--mobile-spacing-sm) 0;
   }
 
   .modal-description {
     font-size: var(--mobile-font-md);
     min-height: auto;
-    margin-bottom: var(--mobile-spacing-lg);
+    margin-bottom: var(--mobile-spacing-xl);
+    padding: 0;
+    line-height: 1.5;
   }
 
   .modal-player-selector {
-    margin-bottom: var(--mobile-spacing-lg);
+    margin-bottom: var(--mobile-spacing-xl);
   }
 
   .modal-select {
     padding: var(--mobile-spacing-md) var(--mobile-spacing-lg);
     font-size: var(--mobile-font-md);
     min-height: var(--mobile-tap-target);
+    height: auto;
   }
 
   .modal-confirm-button {
-    padding: var(--mobile-spacing-md) var(--mobile-spacing-lg);
+    padding: var(--mobile-spacing-lg) var(--mobile-spacing-xl);
     font-size: var(--mobile-font-md);
     min-height: var(--mobile-tap-target);
+    margin-top: var(--mobile-spacing-md);
   }
 }
 
 @media (max-width: 480px) {
   .modal-content {
-    padding: var(--mobile-spacing-md);
+    padding: var(--mobile-spacing-lg);
     max-width: calc(100vw - var(--mobile-spacing-md) * 2);
+    padding-top: 2.5rem;
   }
 
   .modal-title {
     font-size: var(--mobile-font-lg);
+    margin-bottom: var(--mobile-spacing-md);
   }
 
   .modal-description {
     font-size: var(--mobile-font-sm);
+    margin-bottom: var(--mobile-spacing-lg);
+  }
+
+  .modal-select {
+    font-size: var(--mobile-font-sm);
+  }
+
+  .modal-confirm-button {
+    font-size: var(--mobile-font-sm);
+    padding: var(--mobile-spacing-md) var(--mobile-spacing-lg);
   }
 }
